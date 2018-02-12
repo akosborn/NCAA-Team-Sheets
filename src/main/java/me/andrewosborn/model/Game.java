@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Game
@@ -16,9 +17,11 @@ public class Game
     @GeneratedValue
     private long id;
 
+    @ManyToOne
     @JsonIgnoreProperties(value = "games", allowSetters = true)
     private Team homeTeam;
 
+    @ManyToOne
     @JsonIgnoreProperties(value = "games", allowSetters = true)
     private Team awayTeam;
 

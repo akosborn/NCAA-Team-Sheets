@@ -16,6 +16,12 @@ public class Conference
     private String name;
     private String urlName;
 
+    public Conference(String name, String urlName)
+    {
+        this.name = name;
+        this.urlName = urlName;
+    }
+
     public long getId()
     {
         return id;

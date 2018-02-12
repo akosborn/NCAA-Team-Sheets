@@ -1,9 +1,6 @@
 package me.andrewosborn.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -17,10 +14,18 @@ public class Team
 
     private String name;
     private String urlName;
+
+    @OneToOne
     private Conference conference;
 
     @OneToMany
     private List<Game> games;
+
+    public Team(String name, String urlName)
+    {
+        this.name = name;
+        this.urlName = urlName;
+    }
 
     public Long getId()
     {
