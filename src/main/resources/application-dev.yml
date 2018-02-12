@@ -8,7 +8,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    .
     show-sql: false
   thymeleaf:
     cache: false
