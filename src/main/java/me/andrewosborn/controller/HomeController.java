@@ -21,11 +21,11 @@ public class HomeController
     List<Team> teams;
 
     @RequestMapping("/")
-    public String home()
+    public List<Team> home()
     {
         getConferencesFromURL();
 
-        return "Welcome to CBB Team Sheets";
+        return teams;
     }
 
     private void getConferencesFromURL()
@@ -60,7 +60,7 @@ public class HomeController
                         String teamURLName = teamURL.split("/")[2];
                         String teamName = link.select("span").text();
 
-                        Team team = new Team(teamName, teamURLName);
+                        Team team = new Team(teamName, teamURLName, conference);
                         teams.add(team);
                     }
                 }

@@ -21,10 +21,11 @@ public class Team
     @OneToMany
     private List<Game> games;
 
-    public Team(String name, String urlName)
+    public Team(String name, String urlName, Conference conference)
     {
         this.name = name;
         this.urlName = urlName;
+        this.conference = conference;
     }
 
     public Long getId()
