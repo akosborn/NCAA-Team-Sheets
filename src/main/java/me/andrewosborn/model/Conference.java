@@ -3,31 +3,25 @@ package me.andrewosborn.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.List;
 
 @Entity
-public class Team
+public class Conference
 {
-    public Team(){}
+    public Conference(){}
 
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
 
     private String name;
     private String urlName;
-    private Conference conference;
 
-    @OneToMany
-    private List<Game> games;
-
-    public Long getId()
+    public long getId()
     {
         return id;
     }
 
-    public void setId(Long id)
+    public void setId(long id)
     {
         this.id = id;
     }
@@ -50,25 +44,5 @@ public class Team
     public void setUrlName(String urlName)
     {
         this.urlName = urlName;
-    }
-
-    public List<Game> getGames()
-    {
-        return games;
-    }
-
-    public void setGames(List<Game> games)
-    {
-        this.games = games;
-    }
-
-    public Conference getConference()
-    {
-        return conference;
-    }
-
-    public void setConference(Conference conference)
-    {
-        this.conference = conference;
     }
 }

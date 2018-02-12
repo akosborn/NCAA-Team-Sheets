@@ -1,9 +1,9 @@
 package me.andrewosborn.controller;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URL;
 
 @RestController
 public class HomeController
