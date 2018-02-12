@@ -1,8 +1,9 @@
 package me.andrewosborn.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Conference
@@ -15,6 +16,10 @@ public class Conference
 
     private String name;
     private String urlName;
+
+    @OneToMany
+    @JsonIgnoreProperties(value = "conference", allowSetters = true)
+    private List<Team> teams;
 
     public Conference(String name, String urlName)
     {
@@ -50,5 +55,15 @@ public class Conference
     public void setUrlName(String urlName)
     {
         this.urlName = urlName;
+    }
+
+    public List<Team> getTeams()
+    {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams)
+    {
+        this.teams = teams;
     }
 }

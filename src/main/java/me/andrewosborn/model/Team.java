@@ -15,7 +15,7 @@ public class Team
     private String name;
     private String urlName;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     private Conference conference;
 
     @OneToMany
