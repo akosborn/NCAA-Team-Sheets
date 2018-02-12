@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ncaa_team_sheets
+  datasource:
+    url: jdbc:mysql://localhost/ncaa_team_sheets_dev?autoReconnect=true&useSSL=false
+    username: root
+    password: Osbo_789
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    .
+    show-sql: false
+  thymeleaf:
+    cache: false
