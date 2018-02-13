@@ -10,8 +10,8 @@ import me.andrewosborn.persistence.ConferenceService;
 import me.andrewosborn.persistence.GameService;
 import me.andrewosborn.persistence.TeamService;
 import me.andrewosborn.util.ControllerUtil;
+import me.andrewosborn.util.JsonUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,55 +21,94 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@RequestMapping("/init")
 @RestController
-public class HomeController
+public class DataInitController
 {
     private TeamService teamService;
     private ConferenceService conferenceService;
     private GameService gameService;
 
-    private List<Team> teams;
-    List<String> gameURLs;
-
     @Autowired
-    public HomeController(TeamService teamService, ConferenceService conferenceService, GameService gameService)
+    public DataInitController(TeamService teamService, ConferenceService conferenceService, GameService gameService)
     {
         this.teamService = teamService;
         this.conferenceService = conferenceService;
         this.gameService = gameService;
     }
 
-    @RequestMapping("/teams")
+    @RequestMapping("")
     public List<Team> home()
     {
-        getTeamsWithConferences();
-        teamService.saveAll(teams);
-        getGameUrls(loopThroughDates());
-        getGames();
-
-        loopThroughDates();
+        saveData(LocalDate.of(2017, 11, 10), LocalDate.now().minusDays(1));
 
         return teamService.getAll();
     }
 
-    private List<LocalDate> loopThroughDates()
+    private void saveData(LocalDate fromDate, LocalDate toDate)
+    {
+        saveConferencesWithTeams();
+        List<String> gameUrls = getGameUrls(loopThroughDates(fromDate, toDate));
+        saveGames(gameUrls);
+    }
+
+    private void saveConferencesWithTeams()
+    {
+        try
+        {
+            String urlString = "https://www.ncaa.com/standings/basketball-men/d1/2017";
+            Document document = Jsoup.connect(urlString).get();
+
+            List<Element> conferenceElements =
+                    document.getElementsByClass("ncaa-standings-conference-name");
+            for (Element confElement : conferenceElements)
+            {
+                String confName = confElement.text();
+                String confURLName = ControllerUtil.toSlug(confName);
+
+                Conference conference = new Conference(confName, confURLName);
+                List<Team> confTeams = new ArrayList<>();
+
+                Element conferenceTable = confElement.nextElementSibling();
+                Elements confTableRows = conferenceTable.select("tbody>tr");
+                for (int i = 0; i < confTableRows.size(); i++)
+                {
+                    if (i > 0)
+                    {
+                        Element teamRow = confTableRows.get(i);
+                        Element teamNameCell = teamRow.children().first().children().first();
+                        Element link = teamNameCell.select("a").first();
+                        String teamURL = link.attr("href");
+                        String teamURLName = teamURL.split("/")[2];
+                        String teamName = link.select("span").text();
+
+                        Team team = new Team(teamName, teamURLName, conference);
+                        confTeams.add(team);
+                    }
+                }
+
+                conference.setTeams(confTeams);
+                conferenceService.save(conference);
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private List<LocalDate> loopThroughDates(LocalDate fromDate, LocalDate toDate)
     {
         List<LocalDate> dates = new ArrayList<>();
 
-        LocalDate startDate = LocalDate.of(2017, 11, 10);
-        LocalDate endDate = LocalDate.now().minusDays(1);
-
-        for (LocalDate date = startDate;
-             date.isBefore(endDate) || date.isEqual(endDate);
+        for (LocalDate date = fromDate;
+             date.isBefore(toDate) || date.isEqual(toDate);
              date = date.plusDays(1))
         {
             dates.add(date);
@@ -78,32 +117,9 @@ public class HomeController
         return dates;
     }
 
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException
+    private List<String> getGameUrls(List<LocalDate> dates)
     {
-        InputStream is = new URL(url).openStream();
-        try
-        {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
-        }
-    }
-
-    private void getGameUrls(List<LocalDate> dates)
-    {
-        gameURLs = new ArrayList<>();
+        List<String> gameURLs = new ArrayList<>();
         DecimalFormat decimalFormat = new DecimalFormat("00");
         for (LocalDate date : dates)
         {
@@ -115,7 +131,7 @@ public class HomeController
                     + dateString + "/scoreboard.json";
             try
             {
-                JSONObject json = readJsonFromUrl(stringURL);
+                JSONObject json = JsonUtil.readJsonFromUrl(stringURL);
                 JSONObject object = json.getJSONArray("scoreboard").getJSONObject(0);
                 JSONArray games = object.getJSONArray("games");
 
@@ -130,18 +146,19 @@ public class HomeController
                 e.printStackTrace();
             }
         }
+        return gameURLs;
     }
 
-    private void getGames()
+    private void saveGames(List<String> gameUrls)
     {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         String baseUrl = "http://data.ncaa.com";
-        for (String gameUrl : gameURLs)
+        for (String gameUrl : gameUrls)
         {
             String url = baseUrl + gameUrl;
             try
             {
-                GamePOJO gamePOJO = gson.fromJson(readUrl(url), GamePOJO.class);
+                GamePOJO gamePOJO = gson.fromJson(JsonUtil.readUrl(url), GamePOJO.class);
                 Team homeTeam = teamService.getByUrlName(gamePOJO.getHomeTeam().slugName);
                 Team awayTeam = teamService.getByUrlName(gamePOJO.getAwayTeam().slugName);
                 // Don't save game if one or more of the teams is not Division 1
@@ -240,74 +257,6 @@ public class HomeController
         public void setScore(int score)
         {
             this.score = score;
-        }
-    }
-
-    private static String readUrl(String urlString) throws Exception
-    {
-        BufferedReader reader = null;
-        try
-        {
-            URL url = new URL(urlString);
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuffer buffer = new StringBuffer();
-            int read;
-            char[] chars = new char[1024];
-            while ((read = reader.read(chars)) != -1)
-                buffer.append(chars, 0, read);
-
-            return buffer.toString();
-        }
-        finally
-        {
-            if (reader != null)
-                reader.close();
-        }
-    }
-
-    private void getTeamsWithConferences()
-    {
-        try
-        {
-            String urlString = "https://www.ncaa.com/standings/basketball-men/d1/2017";
-            Document document = Jsoup.connect(urlString).get();
-
-            teams = new ArrayList<>();
-            List<Element> conferenceElements =
-                    document.getElementsByClass("ncaa-standings-conference-name");
-            for (Element confElement : conferenceElements)
-            {
-                String confName = confElement.text();
-                String confURLName = ControllerUtil.toSlug(confName);
-
-                Conference conference = new Conference(confName, confURLName);
-                List<Team> confTeams = new ArrayList<>();
-
-                Element conferenceTable = confElement.nextElementSibling();
-                Elements confTableRows = conferenceTable.select("tbody>tr");
-                for (int i = 0; i < confTableRows.size(); i++)
-                {
-                    if (i > 0)
-                    {
-                        Element teamRow = confTableRows.get(i);
-                        Element teamNameCell = teamRow.children().first().children().first();
-                        Element link = teamNameCell.select("a").first();
-                        String teamURL = link.attr("href");
-                        String teamURLName = teamURL.split("/")[2];
-                        String teamName = link.select("span").text();
-
-                        Team team = new Team(teamName, teamURLName, conference);
-                        confTeams.add(team);
-                        teams.add(team);
-                    }
-                }
-
-                conference.setTeams(confTeams);
-                conferenceService.save(conference);
-            }
-        } catch (IOException e)
-        {
-            e.printStackTrace();
         }
     }
 }
