@@ -1,5 +1,7 @@
 package me.andrewosborn.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class Team
     private String urlName;
 
     @OneToOne(cascade = {CascadeType.ALL})
+    @JsonIgnoreProperties(value = "teams", allowSetters = true)
     private Conference conference;
 
     @OneToMany
