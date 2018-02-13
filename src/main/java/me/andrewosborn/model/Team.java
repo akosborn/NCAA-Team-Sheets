@@ -24,7 +24,7 @@ public class Team
     @OneToMany
     private List<Game> games;
 
-    private int rpi;
+    private float rpi;
 
     private float winPct;
 
@@ -89,7 +89,7 @@ public class Team
         this.conference = conference;
     }
 
-    public int getRpi()
+    public float getRpi()
     {
         return rpi;
     }

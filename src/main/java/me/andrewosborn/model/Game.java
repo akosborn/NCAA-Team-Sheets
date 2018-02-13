@@ -32,6 +32,8 @@ public class Game
 
     private Date date;
 
+    private boolean neutralSite;
+
     public long getId()
     {
         return id;
@@ -90,5 +92,15 @@ public class Game
     public void setDate(Date date)
     {
         this.date = date;
+    }
+
+    public boolean isNeutralSite()
+    {
+        return neutralSite;
+    }
+
+    public void setNeutralSite(boolean neutralSite)
+    {
+        this.neutralSite = neutralSite;
     }
 }
