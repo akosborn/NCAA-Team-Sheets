@@ -24,6 +24,14 @@ public class Team
     @OneToMany
     private List<Game> games;
 
+    private int rpi;
+
+    private float winPct;
+
+    private float oppWinPct;
+
+    private float oppOppWinPct;
+
     public Team(String name, String urlName, Conference conference)
     {
         this.name = name;
@@ -79,5 +87,45 @@ public class Team
     public void setConference(Conference conference)
     {
         this.conference = conference;
+    }
+
+    public int getRpi()
+    {
+        return rpi;
+    }
+
+    public void setRpi(int rpi)
+    {
+        this.rpi = rpi;
+    }
+
+    public float getWinPct()
+    {
+        return winPct;
+    }
+
+    public void setWinPct(float winPct)
+    {
+        this.winPct = winPct;
+    }
+
+    public float getOppWinPct()
+    {
+        return oppWinPct;
+    }
+
+    public void setOppWinPct(float oppWinPct)
+    {
+        this.oppWinPct = oppWinPct;
+    }
+
+    public float getOppOppWinPct()
+    {
+        return oppOppWinPct;
+    }
+
+    public void setOppOppWinPct(float oppOppWinPct)
+    {
+        this.oppOppWinPct = oppOppWinPct;
     }
 }
