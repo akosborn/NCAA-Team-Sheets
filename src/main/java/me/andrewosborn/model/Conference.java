@@ -17,7 +17,7 @@ public class Conference
     private String name;
     private String urlName;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.ALL})
     @JsonIgnoreProperties(value = "conference", allowSetters = true)
     private List<Team> teams;
 

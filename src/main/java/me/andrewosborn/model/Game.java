@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.util.Date;
 
 @Entity
 public class Game
@@ -28,6 +29,8 @@ public class Game
     private int homeScore;
 
     private int awayScore;
+
+    private Date date;
 
     public long getId()
     {
@@ -77,5 +80,15 @@ public class Game
     public void setAwayScore(int awayScore)
     {
         this.awayScore = awayScore;
+    }
+
+    public Date getDate()
+    {
+        return date;
+    }
+
+    public void setDate(Date date)
+    {
+        this.date = date;
     }
 }

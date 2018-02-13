@@ -21,4 +21,14 @@ public class TeamService
     {
         return teamRepository.save(teams);
     }
+
+    public List<Team> getAll()
+    {
+        return teamRepository.findAll();
+    }
+
+    public Team getByUrlName(String urlName)
+    {
+        return teamRepository.findOneByUrlName(urlName);
+    }
 }

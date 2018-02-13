@@ -21,4 +21,14 @@ public class ConferenceService
     {
         return conferenceRepository.save(conferences);
     }
+
+    public Conference save(Conference conference)
+    {
+        return conferenceRepository.save(conference);
+    }
+
+    public List<Conference> getAll()
+    {
+        return conferenceRepository.findAll();
+    }
 }
