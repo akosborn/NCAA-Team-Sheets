@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RequestMapping("/init")
+@RequestMapping("/util")
 @RestController
 public class DataInitController
 {
@@ -44,12 +44,31 @@ public class DataInitController
         this.gameService = gameService;
     }
 
-    @RequestMapping("")
+    @RequestMapping("/init")
     public List<Team> home()
     {
         saveData(LocalDate.of(2017, 11, 10), LocalDate.now().minusDays(1));
 
         return teamService.getAll();
+    }
+
+    @RequestMapping("/teams-games")
+    public List<Team> teamsGames()
+    {
+        return teamService.getAll();
+    }
+
+    private void setTeamGames(List<Team> teams)
+    {
+        for (Team team : teams)
+        {
+            List<Game> games = gameService.getByTeam(team);
+            if (!games.isEmpty())
+                team.setGames(games);
+
+            System.out.println(team);
+        }
+
     }
 
     private void saveData(LocalDate fromDate, LocalDate toDate)

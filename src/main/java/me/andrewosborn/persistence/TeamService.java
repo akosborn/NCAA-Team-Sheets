@@ -31,4 +31,9 @@ public class TeamService
     {
         return teamRepository.findOneByUrlName(urlName);
     }
+
+    public Team getByName(String name)
+    {
+        return teamRepository.findOneByName(name);
+    }
 }

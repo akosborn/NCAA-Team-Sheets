@@ -5,5 +5,5 @@ package me.andrewosborn.util;
  */
 public class RPICalculation
 {
-    
+
 }
