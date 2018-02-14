@@ -28,9 +28,15 @@ public class Team
 
     private int losses;
 
+    private float weightedWins;
+
+    private float weightedLosses;
+
     private float rpi;
 
     private float winPct;
+
+    private float weightedWinPct;
 
     private float oppWinPct;
 
@@ -151,5 +157,35 @@ public class Team
     public void setOppOppWinPct(float oppOppWinPct)
     {
         this.oppOppWinPct = oppOppWinPct;
+    }
+
+    public float getWeightedWins()
+    {
+        return weightedWins;
+    }
+
+    public void setWeightedWins(float weightedWins)
+    {
+        this.weightedWins = weightedWins;
+    }
+
+    public float getWeightedLosses()
+    {
+        return weightedLosses;
+    }
+
+    public void setWeightedLosses(float weightedLosses)
+    {
+        this.weightedLosses = weightedLosses;
+    }
+
+    public float getWeightedWinPct()
+    {
+        return weightedWinPct;
+    }
+
+    public void setWeightedWinPct(float weightedWinPct)
+    {
+        this.weightedWinPct = weightedWinPct;
     }
 }
