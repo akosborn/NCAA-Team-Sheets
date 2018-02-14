@@ -68,7 +68,6 @@ public class DataInitController
 
             System.out.println(team);
         }
-
     }
 
     private void saveData(LocalDate fromDate, LocalDate toDate)
