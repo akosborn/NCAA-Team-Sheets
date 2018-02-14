@@ -27,68 +27,53 @@ public class CalculateResult
         int neutralLosses = 0;
         GameSite site = null;
 
-        List<Game> games = team.getGames();
-        for (Game game : games)
+        List<Game> homeGames = team.getHomeGames();
+        List<Game> awayGames = team.getAwayGames();
+        for (Game game : homeGames)
         {
             boolean win = false;
             int currentTeamScore = 0;
             int opponentTeamScore = 0;
-            if (game.getHomeTeam() == team)
-            {
-                currentTeamScore = game.getHomeScore();
-                opponentTeamScore = game.getAwayScore();
-                site = GameSite.HOME;
-            }
-            else if (game.getAwayTeam() == team)
-            {
-                currentTeamScore = game.getAwayScore();
-                opponentTeamScore = game.getHomeScore();
-                site = GameSite.AWAY;
-            }
 
-            if (game.isNeutralSite())
-            {
-                site = GameSite.NEUTRAL;
-            }
+            currentTeamScore = game.getHomeScore();
+            opponentTeamScore = game.getAwayScore();
 
             if (currentTeamScore > opponentTeamScore)
-            {
                 win = true;
-            }
 
             if (win)
             {
                 wins++;
-
-                if (site == GameSite.HOME)
-                {
-                    homeWins++;
-                }
-                else if (site == GameSite.AWAY)
-                {
-                    awayWins++;
-                }
-                else
-                {
-                    neutralWins++;
-                }
+                homeWins++;
             }
             else
             {
                 losses++;
+                homeLosses++;
+            }
+        }
 
-                if (site == GameSite.HOME)
-                {
-                    homeLosses++;
-                }
-                else if (site == GameSite.AWAY)
-                {
-                    awayLosses++;
-                }
-                else if (site == GameSite.NEUTRAL)
-                {
-                    neutralLosses++;
-                }
+        for (Game game : awayGames)
+        {
+            boolean win = false;
+            int currentTeamScore = 0;
+            int opponentTeamScore = 0;
+
+            opponentTeamScore = game.getHomeScore();
+            currentTeamScore = game.getAwayScore();
+
+            if (currentTeamScore > opponentTeamScore)
+                win = true;
+
+            if (win)
+            {
+                wins++;
+                awayWins++;
+            }
+            else
+            {
+                losses++;
+                awayLosses++;
             }
         }
 

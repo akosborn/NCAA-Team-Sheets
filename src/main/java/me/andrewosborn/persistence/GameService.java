@@ -27,4 +27,14 @@ public class GameService
     {
         return gameRepository.findAllByAwayTeamOrHomeTeam(team, team);
     }
+
+    public List<Game> getHomeGamesByTeam(Team team)
+    {
+        return gameRepository.findAllByHomeTeam(team);
+    }
+
+    public List<Game> getAwayGamesByTeam(Team team)
+    {
+        return gameRepository.findAllByAwayTeam(team);
+    }
 }

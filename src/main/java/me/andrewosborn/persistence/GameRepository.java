@@ -11,4 +11,8 @@ import java.util.List;
 public interface GameRepository extends JpaRepository<Game, Long>
 {
     List<Game> findAllByAwayTeamOrHomeTeam(Team awayTeam, Team homeTeam);
+
+    List<Game> findAllByHomeTeam(Team team);
+
+    List<Game> findAllByAwayTeam(Team team);
 }

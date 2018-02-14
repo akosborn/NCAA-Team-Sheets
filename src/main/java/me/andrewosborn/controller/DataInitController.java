@@ -3,12 +3,14 @@ package me.andrewosborn.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import me.andrewosborn.exception.InvalidScheduleResultsException;
 import me.andrewosborn.model.Conference;
 import me.andrewosborn.model.Game;
 import me.andrewosborn.model.Team;
 import me.andrewosborn.persistence.ConferenceService;
 import me.andrewosborn.persistence.GameService;
 import me.andrewosborn.persistence.TeamService;
+import me.andrewosborn.util.CalculateResult;
 import me.andrewosborn.util.ControllerUtil;
 import me.andrewosborn.util.JsonUtil;
 import org.json.JSONArray;
@@ -19,6 +21,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -55,6 +58,11 @@ public class DataInitController
     @RequestMapping("/teams-games")
     public List<Team> teamsGames()
     {
+        for (Team team : teamService.getAll())
+        {
+            teamService.save(setTeamGames(team));
+        }
+
         return teamService.getAll();
     }
 
@@ -64,16 +72,31 @@ public class DataInitController
         return "Saved no game, as no date is specified";
     }
 
-    private void setTeamGames(List<Team> teams)
+    @RequestMapping("/calculate-record")
+    public Team calculateTeamRecord(@RequestParam(value = "team") String teamName)
     {
-        for (Team team : teams)
+        Team team = teamService.getByName(teamName);
+        try
         {
-            List<Game> games = gameService.getByTeam(team);
-            if (!games.isEmpty())
-                team.setGames(games);
-
-            System.out.println(team);
+            CalculateResult.calculateWins(team);
+        } catch (InvalidScheduleResultsException e)
+        {
+            e.printStackTrace();
         }
+
+        return team;
+    }
+    private Team setTeamGames(Team team)
+    {
+        List<Game> homeGames = gameService.getHomeGamesByTeam(team);
+        List<Game> awayGames = gameService.getAwayGamesByTeam(team);
+
+        if (!homeGames.isEmpty())
+            team.setHomeGames(homeGames);
+        if (!awayGames.isEmpty())
+            team.setAwayGames(awayGames);
+
+        return team;
     }
 
     private void saveData(LocalDate fromDate, LocalDate toDate)

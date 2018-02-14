@@ -2,10 +2,7 @@ package me.andrewosborn.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -19,11 +16,11 @@ public class Game
     private long id;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "games", allowSetters = true)
+    @JsonIgnoreProperties(value = {"homeGames", "awayGames"}, allowSetters = true)
     private Team homeTeam;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "games", allowSetters = true)
+    @JsonIgnoreProperties(value = {"awayGames", "homeGames"}, allowSetters = true)
     private Team awayTeam;
 
     private int homeScore;

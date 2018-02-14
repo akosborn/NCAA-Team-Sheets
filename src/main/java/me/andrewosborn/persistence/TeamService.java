@@ -36,4 +36,9 @@ public class TeamService
     {
         return teamRepository.findOneByName(name);
     }
+
+    public Team save(Team team)
+    {
+        return teamRepository.save(team);
+    }
 }

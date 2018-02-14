@@ -17,12 +17,15 @@ public class Team
     private String name;
     private String urlName;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JsonIgnoreProperties(value = "teams", allowSetters = true)
     private Conference conference;
 
-    @OneToMany
-    private List<Game> games;
+    @OneToMany(mappedBy = "homeTeam", cascade = {CascadeType.ALL})
+    private List<Game> homeGames;
+
+    @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.ALL})
+    private List<Game> awayGames;
 
     private int wins;
 
@@ -91,14 +94,24 @@ public class Team
         this.urlName = urlName;
     }
 
-    public List<Game> getGames()
+    public List<Game> getHomeGames()
     {
-        return games;
+        return homeGames;
     }
 
-    public void setGames(List<Game> games)
+    public void setHomeGames(List<Game> homeGames)
     {
-        this.games = games;
+        this.homeGames = homeGames;
+    }
+
+    public List<Game> getAwayGames()
+    {
+        return awayGames;
+    }
+
+    public void setAwayGames(List<Game> awayGames)
+    {
+        this.awayGames = awayGames;
     }
 
     public int getWins()
