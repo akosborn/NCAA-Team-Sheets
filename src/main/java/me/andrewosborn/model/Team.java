@@ -24,6 +24,10 @@ public class Team
     @OneToMany
     private List<Game> games;
 
+    private int wins;
+
+    private int losses;
+
     private float rpi;
 
     private float winPct;
@@ -79,6 +83,31 @@ public class Team
         this.games = games;
     }
 
+    public int getWins()
+    {
+        return wins;
+    }
+
+    public void setWins(int wins)
+    {
+        this.wins = wins;
+    }
+
+    public int getLosses()
+    {
+        return losses;
+    }
+
+    public void setLosses(int losses)
+    {
+        this.losses = losses;
+    }
+
+    public void setRpi(float rpi)
+    {
+        this.rpi = rpi;
+    }
+
     public Conference getConference()
     {
         return conference;
@@ -92,11 +121,6 @@ public class Team
     public float getRpi()
     {
         return rpi;
-    }
-
-    public void setRpi(int rpi)
-    {
-        this.rpi = rpi;
     }
 
     public float getWinPct()
