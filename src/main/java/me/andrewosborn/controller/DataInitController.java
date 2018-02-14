@@ -58,6 +58,12 @@ public class DataInitController
         return teamService.getAll();
     }
 
+    @RequestMapping("/add-games")
+    public String addGames()
+    {
+        return "Saved no game, as no date is specified";
+    }
+
     private void setTeamGames(List<Team> teams)
     {
         for (Team team : teams)

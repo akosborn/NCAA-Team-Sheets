@@ -28,6 +28,18 @@ public class Team
 
     private int losses;
 
+    private int homeWins;
+
+    private int homeLosses;
+
+    private int awayWins;
+
+    private int awayLosses;
+
+    private int neutralWins;
+
+    private int neutralLosses;
+
     private float weightedWins;
 
     private float weightedLosses;
@@ -187,5 +199,65 @@ public class Team
     public void setWeightedWinPct(float weightedWinPct)
     {
         this.weightedWinPct = weightedWinPct;
+    }
+
+    public int getHomeWins()
+    {
+        return homeWins;
+    }
+
+    public void setHomeWins(int homeWins)
+    {
+        this.homeWins = homeWins;
+    }
+
+    public int getHomeLosses()
+    {
+        return homeLosses;
+    }
+
+    public void setHomeLosses(int homeLosses)
+    {
+        this.homeLosses = homeLosses;
+    }
+
+    public int getAwayWins()
+    {
+        return awayWins;
+    }
+
+    public void setAwayWins(int awayWins)
+    {
+        this.awayWins = awayWins;
+    }
+
+    public int getAwayLosses()
+    {
+        return awayLosses;
+    }
+
+    public void setAwayLosses(int awayLosses)
+    {
+        this.awayLosses = awayLosses;
+    }
+
+    public int getNeutralWins()
+    {
+        return neutralWins;
+    }
+
+    public void setNeutralWins(int neutralWins)
+    {
+        this.neutralWins = neutralWins;
+    }
+
+    public int getNeutralLosses()
+    {
+        return neutralLosses;
+    }
+
+    public void setNeutralLosses(int neutralLosses)
+    {
+        this.neutralLosses = neutralLosses;
     }
 }
