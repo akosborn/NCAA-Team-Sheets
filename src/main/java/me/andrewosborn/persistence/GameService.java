@@ -37,4 +37,9 @@ public class GameService
     {
         return gameRepository.findAllByAwayTeam(team);
     }
+
+    public Game getByTeams(Team teamOne, Team teamTwo)
+    {
+        return gameRepository.findByAwayTeamAndHomeTeam(teamOne, teamTwo);
+    }
 }

@@ -15,4 +15,6 @@ public interface GameRepository extends JpaRepository<Game, Long>
     List<Game> findAllByHomeTeam(Team team);
 
     List<Game> findAllByAwayTeam(Team team);
+
+    Game findByAwayTeamAndHomeTeam(Team awayTeam, Team homeTeam);
 }

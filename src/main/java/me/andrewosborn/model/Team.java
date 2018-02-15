@@ -3,6 +3,7 @@ package me.andrewosborn.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,9 @@ public class Team
 
     @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.ALL})
     private List<Game> awayGames;
+
+    @Transient
+    private List<Game> games;
 
     private int wins;
 
@@ -272,5 +276,13 @@ public class Team
     public void setNeutralLosses(int neutralLosses)
     {
         this.neutralLosses = neutralLosses;
+    }
+
+    public List<Game> getGames()
+    {
+        games = new ArrayList<>(homeGames);
+        games.addAll(awayGames);
+
+        return games;
     }
 }

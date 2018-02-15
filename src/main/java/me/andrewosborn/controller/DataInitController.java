@@ -10,9 +10,7 @@ import me.andrewosborn.model.Team;
 import me.andrewosborn.persistence.ConferenceService;
 import me.andrewosborn.persistence.GameService;
 import me.andrewosborn.persistence.TeamService;
-import me.andrewosborn.util.CalculateResult;
-import me.andrewosborn.util.ControllerUtil;
-import me.andrewosborn.util.JsonUtil;
+import me.andrewosborn.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -104,6 +102,34 @@ public class DataInitController
 
         return "Calculated all teams' records.";
     }
+
+    @RequestMapping("/read-url")
+    public List<String> readUrl()
+    {
+        List<String> neutralSiteOpponents = ESPNUtil.getScheduleUrls(
+                "http://www.espn.com/mens-college-basketball/team/schedule/_/id/261/vermont-catamounts");
+        Team currentTeam = teamService.getByName("Vermont");
+        for (String teamName : neutralSiteOpponents)
+        {
+            Team team = teamService.getByName(teamName);
+            if (team != null)
+            {
+                gameService.getByTeams(currentTeam, team);
+            }
+        }
+
+        return neutralSiteOpponents;
+    }
+
+    @RequestMapping("/parse-records")
+    public String parseRecords()
+    {
+        NCAAUtil.getDetailedRecords("https://www.ncaa.com/rankings/basketball-men/d1/ncaa-mens-basketball-rpi",
+                teamService.getAll());
+
+        return "Hi";
+    }
+
     private Team setTeamGames(Team team)
     {
         List<Game> homeGames = gameService.getHomeGamesByTeam(team);
