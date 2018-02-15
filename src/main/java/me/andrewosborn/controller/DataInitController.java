@@ -86,6 +86,24 @@ public class DataInitController
 
         return team;
     }
+
+    @RequestMapping("/calculate-all-records")
+    public String calculateTeamRecords()
+    {
+        List<Team> teams = teamService.getAll();
+        try
+        {
+            for (Team team : teams)
+            {
+                teamService.save(CalculateResult.calculateWins(team));
+            }
+        } catch (InvalidScheduleResultsException e)
+        {
+            e.printStackTrace();
+        }
+
+        return "Calculated all teams' records.";
+    }
     private Team setTeamGames(Team team)
     {
         List<Game> homeGames = gameService.getHomeGamesByTeam(team);

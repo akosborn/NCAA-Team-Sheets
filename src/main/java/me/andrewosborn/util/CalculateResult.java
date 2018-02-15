@@ -15,7 +15,7 @@ public class CalculateResult
         NEUTRAL
     }
 
-    public static void calculateWins(Team team) throws InvalidScheduleResultsException
+    public static Team calculateWins(Team team) throws InvalidScheduleResultsException
     {
         int wins = 0;
         int losses = 0;
@@ -87,6 +87,8 @@ public class CalculateResult
             team.setAwayLosses(awayLosses);
             team.setNeutralWins(neutralWins);
             team.setNeutralLosses(neutralLosses);
+
+            return team;
         }
         else
         {
