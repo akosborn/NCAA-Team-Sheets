@@ -124,8 +124,7 @@ public class DataInitController
     @RequestMapping("/parse-records")
     public String parseRecords()
     {
-        NCAAUtil.getDetailedRecords("https://www.ncaa.com/rankings/basketball-men/d1/ncaa-mens-basketball-rpi",
-                teamService.getAll());
+        NCAAUtil.parseNittyGrittyPDF("https://extra.ncaa.org/solutions/rpi/Stats%20Library/Feb.%2014,%202018%20Nitty%20Gritty.pdf");
 
         return "Hi";
     }
