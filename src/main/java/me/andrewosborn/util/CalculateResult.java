@@ -41,7 +41,20 @@ public class CalculateResult
             if (currentTeamScore > opponentTeamScore)
                 win = true;
 
-            if (win)
+            if (game.isNeutralSite())
+            {
+                if (win)
+                {
+                    wins++;
+                    neutralWins++;
+                }
+                else
+                {
+                    losses++;
+                    neutralLosses++;
+                }
+            }
+            else if (win)
             {
                 wins++;
                 homeWins++;
@@ -65,7 +78,20 @@ public class CalculateResult
             if (currentTeamScore > opponentTeamScore)
                 win = true;
 
-            if (win)
+            if (game.isNeutralSite())
+            {
+                if (win)
+                {
+                    wins++;
+                    neutralWins++;
+                }
+                else
+                {
+                    losses++;
+                    neutralLosses++;
+                }
+            }
+            else if (win)
             {
                 wins++;
                 awayWins++;

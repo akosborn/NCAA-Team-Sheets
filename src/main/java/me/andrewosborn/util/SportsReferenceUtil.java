@@ -13,13 +13,13 @@ import java.util.List;
 
 public class SportsReferenceUtil
 {
-    public static List<Date> getNeutralSiteGames(Team team)
+    public static List<Date> getNeutralSiteGames(Team team, int month)
     {
         List<Date> neutralDates = new ArrayList<>();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String urlString = "https://www.sports-reference.com/cbb/play-index/tgl_finder.cgi?" +
                 "request=1&match=game&year_min=2018&year_max=2018&comp_schl_rk=eq&val_schl_rk=ANY&comp_opp_rk=eq&" +
-                "val_opp_rk=ANY&school_id=" + team.getSportsReferenceName() + "&game_type=A&game_location=N&is_range=N&" +
+                "val_opp_rk=ANY&game_month=" + month + "&school_id=" + team.getSportsReferenceName() + "&game_type=A&game_location=N&is_range=N&" +
                 "order_by=date_game&order_by_asc=Y";
         Document document = null;
         try

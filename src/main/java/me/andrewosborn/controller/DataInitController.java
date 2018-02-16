@@ -135,7 +135,7 @@ public class DataInitController
     {
         for (Team team : teamService.getAll())
         {
-            List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team);
+            List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, 2);
             for (Date date : neutralDates)
             {
                 try
