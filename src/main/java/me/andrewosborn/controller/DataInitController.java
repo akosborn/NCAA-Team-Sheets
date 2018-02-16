@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.NonUniqueResultException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -127,6 +128,35 @@ public class DataInitController
         NCAAUtil.parseNittyGrittyPDF("https://extra.ncaa.org/solutions/rpi/Stats%20Library/Feb.%2014,%202018%20Nitty%20Gritty.pdf");
 
         return "Hi";
+    }
+
+    @RequestMapping("/parse-neutral")
+    public String parseNeutralGames()
+    {
+        for (Team team : teamService.getAll())
+        {
+            List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team);
+            for (Date date : neutralDates)
+            {
+                try
+                {
+                    List<Game> games = gameService.getByTeamAndDate(team, date);
+                    for (Game game : games)
+                    {
+                        if (game.isNeutralSite())
+                            continue;
+                        game.setNeutralSite(true);
+                        gameService.save(game);
+                    }
+                }
+                catch (NonUniqueResultException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return "Neutral games successfully parsed";
     }
 
     private Team setTeamGames(Team team)

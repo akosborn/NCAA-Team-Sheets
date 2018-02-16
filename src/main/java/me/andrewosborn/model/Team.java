@@ -17,6 +17,7 @@ public class Team
 
     private String name;
     private String urlName;
+    private String sportsReferenceName;
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JsonIgnoreProperties(value = "teams", allowSetters = true)
@@ -284,5 +285,15 @@ public class Team
         games.addAll(awayGames);
 
         return games;
+    }
+
+    public String getSportsReferenceName()
+    {
+        return sportsReferenceName;
+    }
+
+    public void setSportsReferenceName(String sportsReferenceName)
+    {
+        this.sportsReferenceName = sportsReferenceName;
     }
 }

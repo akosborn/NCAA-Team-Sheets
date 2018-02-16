@@ -5,6 +5,7 @@ import me.andrewosborn.model.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -41,5 +42,10 @@ public class GameService
     public Game getByTeams(Team teamOne, Team teamTwo)
     {
         return gameRepository.findByAwayTeamAndHomeTeam(teamOne, teamTwo);
+    }
+
+    public List<Game> getByTeamAndDate(Team team, Date date)
+    {
+        return gameRepository.findByDateAndHomeTeamOrDateAndAwayTeam(date, team, date, team);
     }
 }
