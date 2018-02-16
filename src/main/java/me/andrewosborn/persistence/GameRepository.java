@@ -20,4 +20,6 @@ public interface GameRepository extends JpaRepository<Game, Long>
     Game findByAwayTeamAndHomeTeam(Team awayTeam, Team homeTeam);
 
     List<Game> findByDateAndHomeTeamOrDateAndAwayTeam(Date date, Team awayTeam, Date sameDate, Team homeTeam);
+
+    Game findByHomeTeamAndAwayTeamAndDate(Team homeTeam, Team awayTeam, Date date);
 }

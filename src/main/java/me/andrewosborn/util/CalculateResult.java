@@ -15,7 +15,7 @@ public class CalculateResult
         NEUTRAL
     }
 
-    public static Team calculateWins(Team team) throws InvalidScheduleResultsException
+    public static Team calculateRecord(Team team)
     {
         int wins = 0;
         int losses = 0;
@@ -27,98 +27,105 @@ public class CalculateResult
         int neutralLosses = 0;
         GameSite site = null;
 
-        List<Game> homeGames = team.getHomeGames();
-        List<Game> awayGames = team.getAwayGames();
-        for (Game game : homeGames)
+        try
         {
-            boolean win = false;
-            int currentTeamScore = 0;
-            int opponentTeamScore = 0;
-
-            currentTeamScore = game.getHomeScore();
-            opponentTeamScore = game.getAwayScore();
-
-            if (currentTeamScore > opponentTeamScore)
-                win = true;
-
-            if (game.isNeutralSite())
+            List<Game> homeGames = team.getHomeGames();
+            List<Game> awayGames = team.getAwayGames();
+            for (Game game : homeGames)
             {
-                if (win)
+                boolean win = false;
+                int currentTeamScore = 0;
+                int opponentTeamScore = 0;
+
+                currentTeamScore = game.getHomeScore();
+                opponentTeamScore = game.getAwayScore();
+
+                if (currentTeamScore > opponentTeamScore)
+                    win = true;
+
+                if (game.isNeutralSite())
+                {
+                    if (win)
+                    {
+                        wins++;
+                        neutralWins++;
+                    }
+                    else
+                    {
+                        losses++;
+                        neutralLosses++;
+                    }
+                }
+                else if (win)
                 {
                     wins++;
-                    neutralWins++;
+                    homeWins++;
                 }
                 else
                 {
                     losses++;
-                    neutralLosses++;
+                    homeLosses++;
                 }
             }
-            else if (win)
+
+            for (Game game : awayGames)
             {
-                wins++;
-                homeWins++;
-            }
-            else
-            {
-                losses++;
-                homeLosses++;
-            }
-        }
+                boolean win = false;
+                int currentTeamScore = 0;
+                int opponentTeamScore = 0;
 
-        for (Game game : awayGames)
-        {
-            boolean win = false;
-            int currentTeamScore = 0;
-            int opponentTeamScore = 0;
+                opponentTeamScore = game.getHomeScore();
+                currentTeamScore = game.getAwayScore();
 
-            opponentTeamScore = game.getHomeScore();
-            currentTeamScore = game.getAwayScore();
+                if (currentTeamScore > opponentTeamScore)
+                    win = true;
 
-            if (currentTeamScore > opponentTeamScore)
-                win = true;
-
-            if (game.isNeutralSite())
-            {
-                if (win)
+                if (game.isNeutralSite())
+                {
+                    if (win)
+                    {
+                        wins++;
+                        neutralWins++;
+                    }
+                    else
+                    {
+                        losses++;
+                        neutralLosses++;
+                    }
+                }
+                else if (win)
                 {
                     wins++;
-                    neutralWins++;
+                    awayWins++;
                 }
                 else
                 {
                     losses++;
-                    neutralLosses++;
+                    awayLosses++;
                 }
             }
-            else if (win)
+
+            if (wins == (homeWins + awayWins + neutralWins) && losses == (homeLosses + awayLosses + neutralLosses))
             {
-                wins++;
-                awayWins++;
+                team.setWins(wins);
+                team.setLosses(losses);
+                team.setHomeWins(homeWins);
+                team.setHomeLosses(homeLosses);
+                team.setAwayWins(awayWins);
+                team.setAwayLosses(awayLosses);
+                team.setNeutralWins(neutralWins);
+                team.setNeutralLosses(neutralLosses);
             }
             else
             {
-                losses++;
-                awayLosses++;
+                throw new InvalidScheduleResultsException("Total wins != cumulative wins OR total losses != cumulative losses.");
             }
         }
-
-        if (wins == (homeWins + awayWins + neutralWins) && losses == (homeLosses + awayLosses + neutralLosses))
+        catch (InvalidScheduleResultsException e)
         {
-            team.setWins(wins);
-            team.setLosses(losses);
-            team.setHomeWins(homeWins);
-            team.setHomeLosses(homeLosses);
-            team.setAwayWins(awayWins);
-            team.setAwayLosses(awayLosses);
-            team.setNeutralWins(neutralWins);
-            team.setNeutralLosses(neutralLosses);
+            e.printStackTrace();
+        }
 
-            return team;
-        }
-        else
-        {
-            throw new InvalidScheduleResultsException("Total wins != cumulative wins OR total losses != cumulative losses.");
-        }
+        return team;
     }
 }

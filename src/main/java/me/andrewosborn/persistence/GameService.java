@@ -48,4 +48,9 @@ public class GameService
     {
         return gameRepository.findByDateAndHomeTeamOrDateAndAwayTeam(date, team, date, team);
     }
+
+    public Game getByHomeTeamAndAwayTeamAndDate(Team homeTeam, Team awayTeam, Date date)
+    {
+        return gameRepository.findByHomeTeamAndAwayTeamAndDate(homeTeam, awayTeam, date);
+    }
 }

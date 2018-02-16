@@ -49,17 +49,29 @@ public class DataInitController
     @RequestMapping("/init")
     public List<Team> home()
     {
-        saveData(LocalDate.of(2017, 11, 10), LocalDate.now().minusDays(1));
+        LocalDate fromDate = LocalDate.of(2018, 2, 14);
+        LocalDate toDate = LocalDate.of(2018, 2, 15);
+        List<String> gameUrls = getGameUrls(loopThroughDates(fromDate, toDate));
+        saveGames(gameUrls);
+
+        for (Team team : teamService.getAll())
+        {
+            team = CalculateResult.calculateRecord(team);
+
+        }
 
         return teamService.getAll();
     }
 
-    @RequestMapping("/teams-games")
+    @RequestMapping("/update")
     public List<Team> teamsGames()
     {
         for (Team team : teamService.getAll())
         {
-            teamService.save(setTeamGames(team));
+            List<Game> homeGames = gameService.getHomeGamesByTeam(team);
+            List<Game> awayGames = gameService.getAwayGamesByTeam(team);
+            // Set a team's games
+            teamService.save(TeamUtil.setTeamGames(team, homeGames, awayGames));
         }
 
         return teamService.getAll();
@@ -77,7 +89,7 @@ public class DataInitController
         Team team = teamService.getByName(teamName);
         try
         {
-            CalculateResult.calculateWins(team);
+            CalculateResult.calculateRecord(team);
         } catch (InvalidScheduleResultsException e)
         {
             e.printStackTrace();
@@ -94,7 +106,7 @@ public class DataInitController
         {
             for (Team team : teams)
             {
-                teamService.save(CalculateResult.calculateWins(team));
+                teamService.save(CalculateResult.calculateRecord(team));
             }
         } catch (InvalidScheduleResultsException e)
         {
@@ -157,19 +169,6 @@ public class DataInitController
         }
 
         return "Neutral games successfully parsed";
-    }
-
-    private Team setTeamGames(Team team)
-    {
-        List<Game> homeGames = gameService.getHomeGamesByTeam(team);
-        List<Game> awayGames = gameService.getAwayGamesByTeam(team);
-
-        if (!homeGames.isEmpty())
-            team.setHomeGames(homeGames);
-        if (!awayGames.isEmpty())
-            team.setAwayGames(awayGames);
-
-        return team;
     }
 
     private void saveData(LocalDate fromDate, LocalDate toDate)
@@ -294,6 +293,9 @@ public class DataInitController
                 game.setHomeScore(gamePOJO.getHomeTeam().getScore());
                 game.setAwayScore(gamePOJO.getAwayTeam().getScore());
 
+                // Move to next gameUrl if game is already in database
+                if (gameService.getByHomeTeamAndAwayTeamAndDate(homeTeam, awayTeam, gamePOJO.getDate()) != null)
+                    continue;
                 gameService.save(game);
             }
             catch (Exception e)
