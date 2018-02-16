@@ -15,12 +15,12 @@ public class Game
     @GeneratedValue
     private long id;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = {"homeGames", "awayGames"}, allowSetters = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = {"homeGames", "awayGames", "games"}, allowSetters = true)
     private Team homeTeam;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = {"awayGames", "homeGames"}, allowSetters = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = {"awayGames", "homeGames", "games"}, allowSetters = true)
     private Team awayTeam;
 
     private int homeScore;

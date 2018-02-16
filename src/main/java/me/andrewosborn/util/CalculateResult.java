@@ -4,10 +4,13 @@ import me.andrewosborn.exception.InvalidScheduleResultsException;
 import me.andrewosborn.model.Game;
 import me.andrewosborn.model.Team;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class CalculateResult
 {
+    private static DecimalFormat decimalFormat = new DecimalFormat("#.000000");
+
     private enum GameSite
     {
         AWAY,
@@ -126,6 +129,18 @@ public class CalculateResult
             e.printStackTrace();
         }
 
+        team.setWinPct(calculateWinPct(wins, losses));
+
         return team;
+    }
+
+    public static float calculateWinPct(int wins, int losses)
+    {
+        float winPct = (float) wins / (wins + losses);
+
+        if (Float.isNaN(winPct))
+            System.out.println(winPct);
+
+        return RoundingUtil.round(winPct, 6);
     }
 }

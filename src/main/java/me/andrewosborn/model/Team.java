@@ -29,6 +29,9 @@ public class Team
     @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.ALL})
     private List<Game> awayGames;
 
+    @Transient
+    private List<Game> games;
+
     private int wins;
 
     private int losses;
@@ -274,6 +277,14 @@ public class Team
     public void setNeutralLosses(int neutralLosses)
     {
         this.neutralLosses = neutralLosses;
+    }
+
+    public List<Game> getGames()
+    {
+        games = new ArrayList<>(homeGames);
+        games.addAll(awayGames);
+
+        return games;
     }
 
     public String getSportsReferenceName()

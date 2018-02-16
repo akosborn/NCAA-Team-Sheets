@@ -44,6 +44,20 @@ public class DataInitController
         this.gameService = gameService;
     }
 
+    @RequestMapping("/set-teams-games")
+    public String setTeamsGames()
+    {
+        for (Team team : teamService.getAll())
+        {
+            // Set team's games
+            List<Game> homeGames = gameService.getHomeGamesByTeam(team);
+            List<Game> awayGames = gameService.getAwayGamesByTeam(team);
+            teamService.save(TeamUtil.setTeamGames(team, homeGames, awayGames));
+        }
+
+        return "Set teams' games";
+    }
+
     @RequestMapping("/update")
     public List<Team> home()
     {
@@ -86,6 +100,65 @@ public class DataInitController
         }
 
         return teamService.getAll();
+    }
+
+    @RequestMapping("calculate-records")
+    public String calculateRecords()
+    {
+        for (Team team : teamService.getAll())
+        {
+            // Calculate detailed overall, home, away, and neutral records
+            team = CalculateResult.calculateRecord(team);
+            teamService.save(team);
+        }
+
+        return "Records calculated";
+    }
+
+    @RequestMapping("update-metrics")
+    public String updateMetrics()
+    {
+        // Update win percent
+        for (Team team : teamService.getAll())
+        {
+            if (team.getWins() == 0 && team.getLosses() == 0)
+                System.out.println(team.getName());
+            float winPct = CalculateResult.calculateWinPct(team.getWins(), team.getLosses());
+            if (winPct != team.getWinPct())
+            {
+                team.setWinPct(winPct);
+                teamService.save(team);
+            }
+            float weightedWinPct = RPICalculation.calculateWeightedWinPct(team);
+            if (weightedWinPct != team.getWeightedWinPct())
+            {
+                team.setWeightedWinPct(weightedWinPct);
+                teamService.save(team);
+            }
+        }
+
+        for (Team team : teamService.getAll())
+        {
+            float oppWinPct = RPICalculation.calculateOpponentsAvgWinPct(team);
+            team.setOppWinPct(oppWinPct);
+            teamService.save(team);
+        }
+
+        for (Team team : teamService.getAll())
+        {
+            float oppOppWinPct = RPICalculation.calculateAvgOppOppWinPct(team);
+            team.setOppOppWinPct(oppOppWinPct);
+            teamService.save(team);
+        }
+
+        for (Team team : teamService.getAll())
+        {
+            float rpi = RPICalculation.calculateRPI(team);
+            team.setRpi(rpi);
+            teamService.save(team);
+        }
+
+        return "Win pct updated for all teams";
     }
 
     @RequestMapping("/read-url")
