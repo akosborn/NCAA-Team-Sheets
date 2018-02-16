@@ -3,7 +3,6 @@ package me.andrewosborn.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-import me.andrewosborn.exception.InvalidScheduleResultsException;
 import me.andrewosborn.model.Conference;
 import me.andrewosborn.model.Game;
 import me.andrewosborn.model.Team;
@@ -19,7 +18,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.NonUniqueResultException;
@@ -46,74 +44,48 @@ public class DataInitController
         this.gameService = gameService;
     }
 
-    @RequestMapping("/init")
+    @RequestMapping("/update")
     public List<Team> home()
     {
         LocalDate fromDate = LocalDate.of(2018, 2, 14);
         LocalDate toDate = LocalDate.of(2018, 2, 15);
-        List<String> gameUrls = getGameUrls(loopThroughDates(fromDate, toDate));
+        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
         saveGames(gameUrls);
 
         for (Team team : teamService.getAll())
         {
-            team = CalculateResult.calculateRecord(team);
-
-        }
-
-        return teamService.getAll();
-    }
-
-    @RequestMapping("/update")
-    public List<Team> teamsGames()
-    {
-        for (Team team : teamService.getAll())
-        {
+            // Set team's games
             List<Game> homeGames = gameService.getHomeGamesByTeam(team);
             List<Game> awayGames = gameService.getAwayGamesByTeam(team);
-            // Set a team's games
             teamService.save(TeamUtil.setTeamGames(team, homeGames, awayGames));
+
+            // Check for new neutral site games and update and save as necessary
+            List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, 2);
+            for (Date date : neutralDates)
+            {
+                try
+                {
+                    List<Game> games = gameService.getByTeamAndDate(team, date);
+                    for (Game game : games)
+                    {
+                        if (game.isNeutralSite())
+                            continue;
+                        game.setNeutralSite(true);
+                        gameService.save(game);
+                    }
+                }
+                catch (NonUniqueResultException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            // Calculate detailed overall, home, away, and neutral records
+            team = CalculateResult.calculateRecord(team);
+            teamService.save(team);
         }
 
         return teamService.getAll();
-    }
-
-    @RequestMapping("/add-games")
-    public String addGames()
-    {
-        return "Saved no game, as no date is specified";
-    }
-
-    @RequestMapping("/calculate-record")
-    public Team calculateTeamRecord(@RequestParam(value = "team") String teamName)
-    {
-        Team team = teamService.getByName(teamName);
-        try
-        {
-            CalculateResult.calculateRecord(team);
-        } catch (InvalidScheduleResultsException e)
-        {
-            e.printStackTrace();
-        }
-
-        return team;
-    }
-
-    @RequestMapping("/calculate-all-records")
-    public String calculateTeamRecords()
-    {
-        List<Team> teams = teamService.getAll();
-        try
-        {
-            for (Team team : teams)
-            {
-                teamService.save(CalculateResult.calculateRecord(team));
-            }
-        } catch (InvalidScheduleResultsException e)
-        {
-            e.printStackTrace();
-        }
-
-        return "Calculated all teams' records.";
     }
 
     @RequestMapping("/read-url")
@@ -142,39 +114,10 @@ public class DataInitController
         return "Hi";
     }
 
-    @RequestMapping("/parse-neutral")
-    public String parseNeutralGames()
-    {
-        for (Team team : teamService.getAll())
-        {
-            List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, 2);
-            for (Date date : neutralDates)
-            {
-                try
-                {
-                    List<Game> games = gameService.getByTeamAndDate(team, date);
-                    for (Game game : games)
-                    {
-                        if (game.isNeutralSite())
-                            continue;
-                        game.setNeutralSite(true);
-                        gameService.save(game);
-                    }
-                }
-                catch (NonUniqueResultException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return "Neutral games successfully parsed";
-    }
-
     private void saveData(LocalDate fromDate, LocalDate toDate)
     {
         saveConferencesWithTeams();
-        List<String> gameUrls = getGameUrls(loopThroughDates(fromDate, toDate));
+        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
         saveGames(gameUrls);
     }
 
@@ -222,7 +165,7 @@ public class DataInitController
         }
     }
 
-    private List<LocalDate> loopThroughDates(LocalDate fromDate, LocalDate toDate)
+    private List<LocalDate> getDatesInRange(LocalDate fromDate, LocalDate toDate)
     {
         List<LocalDate> dates = new ArrayList<>();
 
@@ -236,7 +179,7 @@ public class DataInitController
         return dates;
     }
 
-    private List<String> getGameUrls(List<LocalDate> dates)
+    private List<String> getGameUrlsByDates(List<LocalDate> dates)
     {
         List<String> gameURLs = new ArrayList<>();
         DecimalFormat decimalFormat = new DecimalFormat("00");
