@@ -121,8 +121,6 @@ public class DataInitController
         // Update win percent
         for (Team team : teamService.getAll())
         {
-            if (team.getWins() == 0 && team.getLosses() == 0)
-                System.out.println(team.getName());
             float winPct = CalculateResult.calculateWinPct(team.getWins(), team.getLosses());
             if (winPct != team.getWinPct())
             {
