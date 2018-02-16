@@ -48,26 +48,11 @@ public class Team
 
     private int neutralLosses;
 
-    private float weightedWins;
-
-    private float weightedLosses;
-
     private float rpi;
 
     private float winPct;
 
-    private float weightedWinPct;
-
     private float oppWinPct;
-
-    private float oppOppWinPct;
-
-    public Team(String name, String urlName, Conference conference)
-    {
-        this.name = name;
-        this.urlName = urlName;
-        this.conference = conference;
-    }
 
     public Long getId()
     {
@@ -177,46 +162,6 @@ public class Team
     public void setOppWinPct(float oppWinPct)
     {
         this.oppWinPct = oppWinPct;
-    }
-
-    public float getOppOppWinPct()
-    {
-        return oppOppWinPct;
-    }
-
-    public void setOppOppWinPct(float oppOppWinPct)
-    {
-        this.oppOppWinPct = oppOppWinPct;
-    }
-
-    public float getWeightedWins()
-    {
-        return weightedWins;
-    }
-
-    public void setWeightedWins(float weightedWins)
-    {
-        this.weightedWins = weightedWins;
-    }
-
-    public float getWeightedLosses()
-    {
-        return weightedLosses;
-    }
-
-    public void setWeightedLosses(float weightedLosses)
-    {
-        this.weightedLosses = weightedLosses;
-    }
-
-    public float getWeightedWinPct()
-    {
-        return weightedWinPct;
-    }
-
-    public void setWeightedWinPct(float weightedWinPct)
-    {
-        this.weightedWinPct = weightedWinPct;
     }
 
     public int getHomeWins()
