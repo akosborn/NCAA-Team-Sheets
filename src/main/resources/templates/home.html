@@ -23,8 +23,8 @@
             <tbody>
                 <th:block th:each="team, iterStat : ${teams}">
                     <tr>
-                        <td th:text="${iterStat.count}"></td>
-                        <td th:text="${team.name}"></td>
+                        <td th:text="${team.rpiRank}"></td>
+                        <td><a th:href="@{|/team/${team.urlName}|}" th:text="${team.name}"></a></td>
                         <td th:text="${team.rpi}"></td>
                         <td th:text="${team.wins}"></td>
                         <td th:text="${team.losses}"></td>
