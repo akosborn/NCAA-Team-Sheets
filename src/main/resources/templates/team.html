@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout_site"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>TeamSheets</title>
+</head>
+<body>
+
+    <div layout:fragment="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <p>Quadrant 1</p>
+                    <th:block th:each="game : ${team.homeGames}">
+                        <p th:if="${game.awayTeam.rpiRank <= 30 && !game.neutralSite}"
+                           th:text="${game.awayTeam.name}"></p>
+                    </th:block>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <p>Quadrant 2</p>
+                    <th:block th:each="game : ${team.homeGames}">
+                        <p th:if="${game.awayTeam.rpiRank >= 31 && game.awayTeam.rpiRank <= 75 && !game.neutralSite}"
+                           th:text="${game.awayTeam.name}"></p>
+                    </th:block>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <p>Quadrant 3</p>
+                    <th:block th:each="game : ${team.homeGames}">
+                        <p th:if="${game.awayTeam.rpiRank >= 76 && game.awayTeam.rpiRank <= 160 && !game.neutralSite}"
+                           th:text="${game.awayTeam.name}"></p>
+                    </th:block>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <p>Quadrant 4</p>
+                    <th:block th:each="game : ${team.homeGames}">
+                        <p th:if="${game.awayTeam.rpiRank >= 161 && !game.neutralSite}"
+                           th:text="${game.awayTeam.name}"></p>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
