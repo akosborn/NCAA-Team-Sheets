@@ -29,9 +29,6 @@ public class Team
     @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.ALL})
     private List<Game> awayGames;
 
-    @Transient
-    private List<Game> games;
-
     private int wins;
 
     private int losses;
@@ -48,19 +45,11 @@ public class Team
 
     private int neutralLosses;
 
-    private float weightedWins;
-
-    private float weightedLosses;
-
     private float rpi;
 
+    private int rpiRank;
+
     private float winPct;
-
-    private float weightedWinPct;
-
-    private float oppWinPct;
-
-    private float oppOppWinPct;
 
     public Team(String name, String urlName, Conference conference)
     {
@@ -169,56 +158,6 @@ public class Team
         this.winPct = winPct;
     }
 
-    public float getOppWinPct()
-    {
-        return oppWinPct;
-    }
-
-    public void setOppWinPct(float oppWinPct)
-    {
-        this.oppWinPct = oppWinPct;
-    }
-
-    public float getOppOppWinPct()
-    {
-        return oppOppWinPct;
-    }
-
-    public void setOppOppWinPct(float oppOppWinPct)
-    {
-        this.oppOppWinPct = oppOppWinPct;
-    }
-
-    public float getWeightedWins()
-    {
-        return weightedWins;
-    }
-
-    public void setWeightedWins(float weightedWins)
-    {
-        this.weightedWins = weightedWins;
-    }
-
-    public float getWeightedLosses()
-    {
-        return weightedLosses;
-    }
-
-    public void setWeightedLosses(float weightedLosses)
-    {
-        this.weightedLosses = weightedLosses;
-    }
-
-    public float getWeightedWinPct()
-    {
-        return weightedWinPct;
-    }
-
-    public void setWeightedWinPct(float weightedWinPct)
-    {
-        this.weightedWinPct = weightedWinPct;
-    }
-
     public int getHomeWins()
     {
         return homeWins;
@@ -279,14 +218,6 @@ public class Team
         this.neutralLosses = neutralLosses;
     }
 
-    public List<Game> getGames()
-    {
-        games = new ArrayList<>(homeGames);
-        games.addAll(awayGames);
-
-        return games;
-    }
-
     public String getSportsReferenceName()
     {
         return sportsReferenceName;
@@ -295,5 +226,15 @@ public class Team
     public void setSportsReferenceName(String sportsReferenceName)
     {
         this.sportsReferenceName = sportsReferenceName;
+    }
+
+    public int getRpiRank()
+    {
+        return rpiRank;
+    }
+
+    public void setRpiRank(int rpiRank)
+    {
+        this.rpiRank = rpiRank;
     }
 }

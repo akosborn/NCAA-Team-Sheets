@@ -13,8 +13,8 @@ public class RPICalculation
         float WIN_PCT_RPI_PCT = 0.25f;
         float OPP_WIN_PCT_RPI_PCT = 0.50f;
         float OPP_OPP_WIN_PCT_RPI_PCT = 0.25f;
-        
-        float weightedWinPct = team.getWeightedWinPct();
+
+        float weightedWinPct = calculateWeightedWinPct(team);
         float oppAvgWinPct = calculateOpponentsAvgWinPct(team);
         float oppOppWinPct = calculateAvgOppOppWinPct(team);
 

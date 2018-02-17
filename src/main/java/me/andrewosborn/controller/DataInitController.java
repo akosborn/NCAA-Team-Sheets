@@ -122,37 +122,28 @@ public class DataInitController
         for (Team team : teamService.getAll())
         {
             float winPct = CalculateResult.calculateWinPct(team.getWins(), team.getLosses());
+            // Only update if it has changed
             if (winPct != team.getWinPct())
             {
                 team.setWinPct(winPct);
                 teamService.save(team);
             }
-            float weightedWinPct = RPICalculation.calculateWeightedWinPct(team);
-            if (weightedWinPct != team.getWeightedWinPct())
-            {
-                team.setWeightedWinPct(weightedWinPct);
-                teamService.save(team);
-            }
         }
 
-        for (Team team : teamService.getAll())
-        {
-            float oppWinPct = RPICalculation.calculateOpponentsAvgWinPct(team);
-            team.setOppWinPct(oppWinPct);
-            teamService.save(team);
-        }
-
-        for (Team team : teamService.getAll())
-        {
-            float oppOppWinPct = RPICalculation.calculateAvgOppOppWinPct(team);
-            team.setOppOppWinPct(oppOppWinPct);
-            teamService.save(team);
-        }
-
+        // Calculate RPI
         for (Team team : teamService.getAll())
         {
             float rpi = RPICalculation.calculateRPI(team);
             team.setRpi(rpi);
+            teamService.save(team);
+        }
+
+        // Set rpi rank using counter
+        List<Team> teamsByRpi = teamService.getAllOrderByRpiDesc();
+        for (int i = 0; i < teamsByRpi.size(); i++)
+        {
+            Team team = teamsByRpi.get(i);
+            team.setRpiRank(i+1);
             teamService.save(team);
         }
 
