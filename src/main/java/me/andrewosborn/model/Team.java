@@ -3,7 +3,6 @@ package me.andrewosborn.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,7 +44,7 @@ public class Team
 
     private int neutralLosses;
 
-    private float rpi;
+    private List<RPI> rpiHistory;
 
     private int rpiRank;
 
@@ -128,11 +127,6 @@ public class Team
         this.losses = losses;
     }
 
-    public void setRpi(float rpi)
-    {
-        this.rpi = rpi;
-    }
-
     public Conference getConference()
     {
         return conference;
@@ -141,11 +135,6 @@ public class Team
     public void setConference(Conference conference)
     {
         this.conference = conference;
-    }
-
-    public float getRpi()
-    {
-        return rpi;
     }
 
     public float getWinPct()
@@ -236,5 +225,15 @@ public class Team
     public void setRpiRank(int rpiRank)
     {
         this.rpiRank = rpiRank;
+    }
+
+    public List<RPI> getRpiHistory()
+    {
+        return rpiHistory;
+    }
+
+    public void setRpiHistory(List<RPI> rpiHistory)
+    {
+        this.rpiHistory = rpiHistory;
     }
 }
