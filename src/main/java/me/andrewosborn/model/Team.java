@@ -44,6 +44,7 @@ public class Team
 
     private int neutralLosses;
 
+    @OneToMany
     private List<RPI> rpiHistory;
 
     private int rpiRank;

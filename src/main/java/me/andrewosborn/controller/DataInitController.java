@@ -5,11 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import me.andrewosborn.model.Conference;
 import me.andrewosborn.model.Game;
+import me.andrewosborn.model.RPI;
 import me.andrewosborn.model.Team;
 import me.andrewosborn.persistence.ConferenceService;
 import me.andrewosborn.persistence.GameService;
 import me.andrewosborn.persistence.TeamService;
 import me.andrewosborn.util.*;
+import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -130,12 +132,27 @@ public class DataInitController
             }
         }
 
+        Date today = new Date();
+
         // Calculate RPI
         for (Team team : teamService.getAll())
         {
             float rpi = RPICalculation.calculateRPI(team);
-            team.setRpi(rpi);
-            teamService.save(team);
+            List<RPI> rpiHistory = team.getRpiHistory();
+            if (rpiHistory.size() > 0)
+            {
+                RPI latestRpi = team.getRpiHistory().get(0);
+                if (latestRpi.getDate() == today)
+                {
+                    latestRpi.setRpi(rpi);
+                }
+                else
+                {
+                    RPI rpiToAdd = new RPI(rpi, today);
+                    rpiHistory.add(rpiToAdd);
+                }
+                teamService.save(team);
+            }
         }
 
         // Set rpi rank using counter

@@ -11,6 +11,12 @@ public class RPI
     public RPI()
     {}
 
+    public RPI(float rpi, Date date)
+    {
+        this.rpi = rpi;
+        this.date = date;
+    }
+
     @Id
     @GeneratedValue
     private long id;
