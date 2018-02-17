@@ -141,6 +141,6 @@ public class CalculateResult
         if (Float.isNaN(winPct))
             System.out.println(winPct);
 
-        return RoundingUtil.round(winPct, 6);
+        return RoundingUtil.round(winPct, 10);
     }
 }

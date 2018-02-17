@@ -41,4 +41,9 @@ public class TeamService
     {
         return teamRepository.save(team);
     }
+
+    public List<Team> getAllOrderByRpiDesc()
+    {
+        return teamRepository.findAllByOrderByRpiDesc();
+    }
 }

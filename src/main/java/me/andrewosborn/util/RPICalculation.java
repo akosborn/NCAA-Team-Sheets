@@ -4,32 +4,32 @@ import me.andrewosborn.model.Game;
 import me.andrewosborn.model.Team;
 
 /***
- * 1) calculate winning percentages
+ * @see <a href="https://en.wikipedia.org/wiki/Rating_percentage_index#Basketball_formula"</a>
  */
 public class RPICalculation
 {
-    private static float HOME_WIN_MULTIPLIER = 0.6f;
-    private static float AWAY_WIN_MULTIPLIER = 1.4f;
-    private static float NEUTRAL_WIN_MULTIPLIER = 1f;
-    private static float HOME_LOSS_MULTIPLIER = 1.4f;
-    private static float AWAY_LOSS_MULTIPLIER = 0.6f;
-    private static float NEUTRAL_LOSS_MULTIPLIER = 1f;
-
-    private static float WIN_PCT_RPI_PCT = 0.25f;
-    private static float OPP_WIN_PCT_RPI_PCT = 0.50f;
-    private static float OPP_OPP_WIN_PCT_RPI_PCT = 0.25f;
-
     public static float calculateRPI(Team team)
     {
+        float WIN_PCT_RPI_PCT = 0.25f;
+        float OPP_WIN_PCT_RPI_PCT = 0.50f;
+        float OPP_OPP_WIN_PCT_RPI_PCT = 0.25f;
+        
         float weightedWinPct = team.getWeightedWinPct();
-        float oppAvgWinPct = team.getOppWinPct();
-        float oppOppWinPct = team.getOppOppWinPct();
+        float oppAvgWinPct = calculateOpponentsAvgWinPct(team);
+        float oppOppWinPct = calculateAvgOppOppWinPct(team);
 
         return (weightedWinPct * WIN_PCT_RPI_PCT) + (oppAvgWinPct * OPP_WIN_PCT_RPI_PCT) + (oppOppWinPct * OPP_OPP_WIN_PCT_RPI_PCT);
     }
 
     public static float calculateWeightedWinPct(Team team)
     {
+        float HOME_WIN_MULTIPLIER = 0.6f;
+        float AWAY_WIN_MULTIPLIER = 1.4f;
+        float NEUTRAL_WIN_MULTIPLIER = 1f;
+        float HOME_LOSS_MULTIPLIER = 1.4f;
+        float AWAY_LOSS_MULTIPLIER = 0.6f;
+        float NEUTRAL_LOSS_MULTIPLIER = 1f;
+
         float weightedHomeWins = team.getHomeWins() * HOME_WIN_MULTIPLIER;
         float weightedAwayWins = team.getAwayWins() * AWAY_WIN_MULTIPLIER;
         float weightedNeutralWins = team.getNeutralWins() * NEUTRAL_WIN_MULTIPLIER;
@@ -46,41 +46,91 @@ public class RPICalculation
 
     public static float calculateOpponentsAvgWinPct(Team team)
     {
-        float oppAvgWinPct = 0.0f;
+        float oppWinPctSum = 0.0f;
         int totalGames = team.getHomeGames().size() + team.getAwayGames().size();
 
         for (Game homeGame : team.getHomeGames())
         {
+            int oppIndependentWins = 0;
+            int oppIndependentLosses = 0;
             Team opponent = homeGame.getAwayTeam();
-            oppAvgWinPct += opponent.getWinPct();
+            // Calculate opponent's win pct excluding game(s) against this team
+            for (Game opponentHomeGame : opponent.getHomeGames())
+            {
+                if (opponentHomeGame.getAwayTeam() != team)
+                {
+                    if (opponentHomeGame.getHomeScore() > opponentHomeGame.getAwayScore())
+                        oppIndependentWins++;
+                    else
+                        oppIndependentLosses++;
+                }
+            }
+            for (Game opponentAwayGame : opponent.getAwayGames())
+            {
+                if (opponentAwayGame.getHomeTeam() != team)
+                {
+                    if (opponentAwayGame.getAwayScore() > opponentAwayGame.getHomeScore())
+                        oppIndependentWins++;
+                    else
+                        oppIndependentLosses++;
+                }
+            }
+
+            float oppWinPct = (float) oppIndependentWins / (oppIndependentWins + oppIndependentLosses);
+            oppWinPctSum += oppWinPct;
         }
 
         for (Game awayGame : team.getAwayGames())
         {
+            int oppIndependentWins = 0;
+            int oppIndependentLosses = 0;
             Team opponent = awayGame.getHomeTeam();
-            oppAvgWinPct += opponent.getWinPct();
+            // Calculate opponent's win pct after removing game(s) against this team
+            for (Game opponentHomeGame : opponent.getHomeGames())
+            {
+                if (opponentHomeGame.getAwayTeam() != team)
+                {
+                    if (opponentHomeGame.getHomeScore() > opponentHomeGame.getAwayScore())
+                        oppIndependentWins++;
+                    else
+                        oppIndependentLosses++;
+                }
+            }
+            for (Game opponentAwayGame : opponent.getAwayGames())
+            {
+                if (opponentAwayGame.getHomeTeam() != team)
+                {
+                    if (opponentAwayGame.getAwayScore() > opponentAwayGame.getHomeScore())
+                        oppIndependentWins++;
+                    else
+                        oppIndependentLosses++;
+                }
+            }
+
+            float oppWinPct = (float) oppIndependentWins / (oppIndependentWins + oppIndependentLosses);
+            oppWinPctSum += oppWinPct;
         }
 
-        return oppAvgWinPct / totalGames;
+        return oppWinPctSum / totalGames;
     }
 
     public static float calculateAvgOppOppWinPct(Team team)
     {
-        float oppOppAvgWinPct = 0.0f;
+        float oppOppWinPctSum = 0.0f;
         int totalGames = team.getHomeGames().size() + team.getAwayGames().size();
 
         for (Game homeGame : team.getHomeGames())
         {
             Team opponent = homeGame.getAwayTeam();
-            oppOppAvgWinPct += opponent.getOppWinPct();
+            oppOppWinPctSum += calculateOpponentsAvgWinPct(opponent);
         }
 
         for (Game awayGame : team.getAwayGames())
         {
             Team opponent = awayGame.getHomeTeam();
-            oppOppAvgWinPct += opponent.getOppOppWinPct();
+            oppOppWinPctSum += calculateOpponentsAvgWinPct(opponent);
         }
 
-        return oppOppAvgWinPct / totalGames;
+        return oppOppWinPctSum / totalGames;
     }
 }

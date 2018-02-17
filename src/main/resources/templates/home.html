@@ -20,27 +20,15 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Virginia</td>
-                <td>0.614223</td>
-                <td>24</td>
-                <td>2</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Xavier</td>
-                <td>0.604669</td>
-                <td>24</td>
-                <td>3</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Villanova</td>
-                <td>0.599011</td>
-                <td>23</td>
-                <td>3</td>
-            </tr>
+                <th:block th:each="team, iterStat : ${teams}">
+                    <tr>
+                        <td th:text="${iterStat.count}"></td>
+                        <td th:text="${team.name}"></td>
+                        <td th:text="${team.rpi}"></td>
+                        <td th:text="${team.wins}"></td>
+                        <td th:text="${team.losses}"></td>
+                    </tr>
+                </th:block>
             </tbody>
         </table>
     </div>
