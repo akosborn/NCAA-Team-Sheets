@@ -58,11 +58,13 @@ public class DataInitController
         return "Set teams' games";
     }
 
-    @RequestMapping("/update")
-    public List<Team> home()
+    @RequestMapping("/add-new-games")
+    public String home()
     {
-        LocalDate fromDate = LocalDate.of(2018, 2, 14);
-        LocalDate toDate = LocalDate.of(2018, 2, 15);
+        boolean checkNeutralSites = false;
+
+        LocalDate fromDate = LocalDate.of(2018, 2, 16);
+        LocalDate toDate = LocalDate.of(2018, 2, 16);
         List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
         saveGames(gameUrls);
 
@@ -73,24 +75,27 @@ public class DataInitController
             List<Game> awayGames = gameService.getAwayGamesByTeam(team);
             teamService.save(TeamUtil.setTeamGames(team, homeGames, awayGames));
 
-            // Check for new neutral site games and update and save as necessary
-            List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, 2);
-            for (Date date : neutralDates)
+            if (checkNeutralSites)
             {
-                try
+                // Check for new neutral site games and update and save as necessary
+                List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, 2);
+                for (Date date : neutralDates)
                 {
-                    List<Game> games = gameService.getByTeamAndDate(team, date);
-                    for (Game game : games)
+                    try
                     {
-                        if (game.isNeutralSite())
-                            continue;
-                        game.setNeutralSite(true);
-                        gameService.save(game);
+                        List<Game> games = gameService.getByTeamAndDate(team, date);
+                        for (Game game : games)
+                        {
+                            if (game.isNeutralSite())
+                                continue;
+                            game.setNeutralSite(true);
+                            gameService.save(game);
+                        }
                     }
-                }
-                catch (NonUniqueResultException e)
-                {
-                    e.printStackTrace();
+                    catch (NonUniqueResultException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -99,7 +104,7 @@ public class DataInitController
             teamService.save(team);
         }
 
-        return teamService.getAll();
+        return "Added games from " + fromDate + " to " + toDate;
     }
 
     @RequestMapping("calculate-records")
@@ -147,7 +152,7 @@ public class DataInitController
             teamService.save(team);
         }
 
-        return "Win pct updated for all teams";
+        return "RPI updated for all teams";
     }
 
     @RequestMapping("/read-url")

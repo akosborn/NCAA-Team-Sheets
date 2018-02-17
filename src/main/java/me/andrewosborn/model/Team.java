@@ -44,7 +44,7 @@ public class Team
 
     private int neutralLosses;
 
-    private List<RPI> rpiHistory;
+    private float rpi;
 
     private int rpiRank;
 
@@ -227,13 +227,13 @@ public class Team
         this.rpiRank = rpiRank;
     }
 
-    public List<RPI> getRpiHistory()
+    public float getRpi()
     {
-        return rpiHistory;
+        return rpi;
     }
 
-    public void setRpiHistory(List<RPI> rpiHistory)
+    public void setRpi(float rpi)
     {
-        this.rpiHistory = rpiHistory;
+        this.rpi = rpi;
     }
 }
