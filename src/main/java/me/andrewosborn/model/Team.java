@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Entity
 public class Team
@@ -29,28 +31,37 @@ public class Team
     private List<Game> awayGames;
 
     @Transient
-    private List<Game> quadOneWins;
+    private Map<Integer, Set<Game>> homeQuadrantGames;
 
     @Transient
-    private List<Game> quadOneLosses;
+    private Map<Integer, Set<Game>> awayQuadrantGames;
 
     @Transient
-    private List<Game> quadTwoWins;
+    private Map<Integer, Set<Game>> neutralQuadrantGames;
 
-    @Transient
-    private List<Game> quadTwoLosses;
-
-    @Transient
-    private List<Game> quadThreeWins;
-
-    @Transient
-    private List<Game> quadThreeLosses;
-
-    @Transient
-    private List<Game> quadFourWins;
-
-    @Transient
-    private List<Game> quadFourLosses;
+//    @OneToMany
+//    private List<Game> quadOneWins;
+//
+//    @OneToMany
+//    private List<Game> quadOneLosses;
+//
+//    @OneToMany
+//    private List<Game> quadTwoWins;
+//
+//    @OneToMany
+//    private List<Game> quadTwoLosses;
+//
+//    @OneToMany
+//    private List<Game> quadThreeWins;
+//
+//    @OneToMany
+//    private List<Game> quadThreeLosses;
+//
+//    @OneToMany
+//    private List<Game> quadFourWins;
+//
+//    @OneToMany
+//    private List<Game> quadFourLosses;
 
     private int wins;
 
@@ -261,83 +272,33 @@ public class Team
         this.rpi = rpi;
     }
 
-    public List<Game> getQuadOneWins()
+    public Map<Integer, Set<Game>> getHomeQuadrantGames()
     {
-        return quadOneWins;
+        return homeQuadrantGames;
     }
 
-    public void setQuadOneWins(List<Game> quadOneWins)
+    public void setHomeQuadrantGames(Map<Integer, Set<Game>> homeQuadrantGames)
     {
-        this.quadOneWins = quadOneWins;
+        this.homeQuadrantGames = homeQuadrantGames;
     }
 
-    public List<Game> getQuadOneLosses()
+    public Map<Integer, Set<Game>> getAwayQuadrantGames()
     {
-        return quadOneLosses;
+        return awayQuadrantGames;
     }
 
-    public void setQuadOneLosses(List<Game> quadOneLosses)
+    public void setAwayQuadrantGames(Map<Integer, Set<Game>> awayQuadrantGames)
     {
-        this.quadOneLosses = quadOneLosses;
+        this.awayQuadrantGames = awayQuadrantGames;
     }
 
-    public List<Game> getQuadTwoWins()
+    public Map<Integer, Set<Game>> getNeutralQuadrantGames()
     {
-        return quadTwoWins;
+        return neutralQuadrantGames;
     }
 
-    public void setQuadTwoWins(List<Game> quadTwoWins)
+    public void setNeutralQuadrantGames(Map<Integer, Set<Game>> neutralQuadrantGames)
     {
-        this.quadTwoWins = quadTwoWins;
-    }
-
-    public List<Game> getQuadTwoLosses()
-    {
-        return quadTwoLosses;
-    }
-
-    public void setQuadTwoLosses(List<Game> quadTwoLosses)
-    {
-        this.quadTwoLosses = quadTwoLosses;
-    }
-
-    public List<Game> getQuadThreeWins()
-    {
-        return quadThreeWins;
-    }
-
-    public void setQuadThreeWins(List<Game> quadThreeWins)
-    {
-        this.quadThreeWins = quadThreeWins;
-    }
-
-    public List<Game> getQuadThreeLosses()
-    {
-        return quadThreeLosses;
-    }
-
-    public void setQuadThreeLosses(List<Game> quadThreeLosses)
-    {
-        this.quadThreeLosses = quadThreeLosses;
-    }
-
-    public List<Game> getQuadFourWins()
-    {
-        return quadFourWins;
-    }
-
-    public void setQuadFourWins(List<Game> quadFourWins)
-    {
-        this.quadFourWins = quadFourWins;
-    }
-
-    public List<Game> getQuadFourLosses()
-    {
-        return quadFourLosses;
-    }
-
-    public void setQuadFourLosses(List<Game> quadFourLosses)
-    {
-        this.quadFourLosses = quadFourLosses;
+        this.neutralQuadrantGames = neutralQuadrantGames;
     }
 }

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Game
+public class Game implements Comparable
 {
     public Game()
     {}
@@ -99,5 +99,11 @@ public class Game
     public void setNeutralSite(boolean neutralSite)
     {
         this.neutralSite = neutralSite;
+    }
+
+    @Override
+    public int compareTo(Object o)
+    {
+        return 0;
     }
 }

@@ -11,75 +11,83 @@
 
     <div layout:fragment="content">
         <div class="container">
+            <p th:text="${team.name}"></p>
             <div class="row">
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-3">
                     <p>Quadrant 1</p>
+                    <div class="row">
+                        <div class="col-12 col-md-4">
+                            <!-- home games -->
+                            <p>Home</p>
+                            <th:block th:each="game : ${team.homeQuadrantGames.get(1)}">
+                                <p th:text="${game.awayTeam.name}"></p>
+                            </th:block>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <!-- away games -->
+                            <p>Away</p>
+                            <th:block th:each="game : ${team.awayQuadrantGames.get(1)}">
+                                <p th:text="${game.homeTeam.name}"></p>
+                            </th:block>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <!-- neutral games -->
+                            <p>Neutral</p>
+                            <th:block th:each="game : ${team.neutralQuadrantGames.get(1)}">
+                                <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <p>Quadrant 2</p>
                     <!-- home games -->
-                    <th:block th:each="game : ${team.homeGames}">
-                        <th:block th:if="${!game.neutralSite}">
-                            <!-- if a win -->
-                            <th:block th:if="${game.homeScore > game.awayScore}">
-                                <p th:if="${game.awayTeam.rpiRank <= 30}"
-                                   th:text="${'H | W ' + game.awayTeam.name}"></p>
-                            </th:block>
-                            <!-- if a loss -->
-                            <th:block th:if="${game.homeScore < game.awayScore}">
-                                <p th:if="${game.awayTeam.rpiRank <= 30}"
-                                   th:text="${'H | L ' + game.awayTeam.name}"></p>
-                            </th:block>
-                        </th:block>
-                        <!-- if a neutral site game -->
-                        <th:block th:if="${game.neutralSite}">
-                            <!-- if a win -->
-                            <th:block th:if="${game.homeScore > game.awayScore}">
-                                <p th:if="${game.awayTeam.rpiRank <= 50}"
-                                   th:text="${'N | W' + game.awayTeam.name}"></p>
-                            </th:block>
-                            <!-- if a loss -->
-                            <th:block th:if="${game.homeScore < game.awayScore}">
-                                <p th:if="${game.awayTeam.rpiRank <= 50}"
-                                   th:text="${'N | L' + game.awayTeam.name}"></p>
-                            </th:block>
-                        </th:block>
+                    <th:block th:each="game : ${team.homeQuadrantGames.get(2)}">
+                        <p th:text="${game.awayTeam.name}"></p>
                     </th:block>
 
                     <!-- away games -->
-                    <th:block th:each="game : ${team.awayGames}">
-                        <!-- if a win -->
-                        <th:block th:if="${game.awayScore > game.homeScore}">
-                            <p>A</p>
-                            <p th:if="${game.awayTeam.rpiRank <= 30 && !game.neutralSite}"
-                               th:text="${game.awayTeam.name}"></p>
-                            <p>W</p>
-                        </th:block>
-                        <!-- if a loss -->
-                        <th:block th:if="${game.awayScore < game.homeScore}">
-                            <p>A</p>
-                            <p th:if="${game.awayTeam.rpiRank <= 30 && !game.neutralSite}"
-                               th:text="${game.awayTeam.name}"></p>
-                            <p>L</p>
-                        </th:block>
+                    <th:block th:each="game : ${team.awayQuadrantGames.get(2)}">
+                        <p th:text="${game.homeTeam.name}"></p>
+                    </th:block>
+
+                    <!-- neutral games -->
+                    <th:block th:each="game : ${team.neutralQuadrantGames.get(2)}">
+                        <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
                     </th:block>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3">
-                    <p>Quadrant 2</p>
-                    <th:block th:each="game : ${team.homeGames}">
-                        <p th:if="${game.awayTeam.rpiRank >= 31 && game.awayTeam.rpiRank <= 75 && !game.neutralSite}"
-                           th:text="${game.awayTeam.name}"></p>
-                    </th:block>
-                </div>
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-3">
                     <p>Quadrant 3</p>
-                    <th:block th:each="game : ${team.homeGames}">
-                        <p th:if="${game.awayTeam.rpiRank >= 76 && game.awayTeam.rpiRank <= 160 && !game.neutralSite}"
-                           th:text="${game.awayTeam.name}"></p>
+                    <!-- home games -->
+                    <th:block th:each="game : ${team.homeQuadrantGames.get(3)}">
+                        <p th:text="${game.awayTeam.name}"></p>
+                    </th:block>
+
+                    <!-- away games -->
+                    <th:block th:each="game : ${team.awayQuadrantGames.get(3)}">
+                        <p th:text="${game.homeTeam.name}"></p>
+                    </th:block>
+
+                    <!-- neutral games -->
+                    <th:block th:each="game : ${team.neutralQuadrantGames.get(3)}">
+                        <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
                     </th:block>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-3">
                     <p>Quadrant 4</p>
-                    <th:block th:each="game : ${team.homeGames}">
-                        <p th:if="${game.awayTeam.rpiRank >= 161 && !game.neutralSite}"
-                           th:text="${game.awayTeam.name}"></p>
+                    <!-- home games -->
+                    <th:block th:each="game : ${team.homeQuadrantGames.get(4)}">
+                        <p th:text="${game.awayTeam.name}"></p>
+                    </th:block>
+
+                    <!-- away games -->
+                    <th:block th:each="game : ${team.awayQuadrantGames.get(4)}">
+                        <p th:text="${game.homeTeam.name}"></p>
+                    </th:block>
+
+                    <!-- neutral games -->
+                    <th:block th:each="game : ${team.neutralQuadrantGames.get(4)}">
+                        <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
                     </th:block>
                 </div>
             </div>
