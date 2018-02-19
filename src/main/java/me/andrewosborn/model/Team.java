@@ -28,6 +28,30 @@ public class Team
     @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.ALL})
     private List<Game> awayGames;
 
+    @Transient
+    private List<Game> quadOneWins;
+
+    @Transient
+    private List<Game> quadOneLosses;
+
+    @Transient
+    private List<Game> quadTwoWins;
+
+    @Transient
+    private List<Game> quadTwoLosses;
+
+    @Transient
+    private List<Game> quadThreeWins;
+
+    @Transient
+    private List<Game> quadThreeLosses;
+
+    @Transient
+    private List<Game> quadFourWins;
+
+    @Transient
+    private List<Game> quadFourLosses;
+
     private int wins;
 
     private int losses;
@@ -235,5 +259,85 @@ public class Team
     public void setRpi(float rpi)
     {
         this.rpi = rpi;
+    }
+
+    public List<Game> getQuadOneWins()
+    {
+        return quadOneWins;
+    }
+
+    public void setQuadOneWins(List<Game> quadOneWins)
+    {
+        this.quadOneWins = quadOneWins;
+    }
+
+    public List<Game> getQuadOneLosses()
+    {
+        return quadOneLosses;
+    }
+
+    public void setQuadOneLosses(List<Game> quadOneLosses)
+    {
+        this.quadOneLosses = quadOneLosses;
+    }
+
+    public List<Game> getQuadTwoWins()
+    {
+        return quadTwoWins;
+    }
+
+    public void setQuadTwoWins(List<Game> quadTwoWins)
+    {
+        this.quadTwoWins = quadTwoWins;
+    }
+
+    public List<Game> getQuadTwoLosses()
+    {
+        return quadTwoLosses;
+    }
+
+    public void setQuadTwoLosses(List<Game> quadTwoLosses)
+    {
+        this.quadTwoLosses = quadTwoLosses;
+    }
+
+    public List<Game> getQuadThreeWins()
+    {
+        return quadThreeWins;
+    }
+
+    public void setQuadThreeWins(List<Game> quadThreeWins)
+    {
+        this.quadThreeWins = quadThreeWins;
+    }
+
+    public List<Game> getQuadThreeLosses()
+    {
+        return quadThreeLosses;
+    }
+
+    public void setQuadThreeLosses(List<Game> quadThreeLosses)
+    {
+        this.quadThreeLosses = quadThreeLosses;
+    }
+
+    public List<Game> getQuadFourWins()
+    {
+        return quadFourWins;
+    }
+
+    public void setQuadFourWins(List<Game> quadFourWins)
+    {
+        this.quadFourWins = quadFourWins;
+    }
+
+    public List<Game> getQuadFourLosses()
+    {
+        return quadFourLosses;
+    }
+
+    public void setQuadFourLosses(List<Game> quadFourLosses)
+    {
+        this.quadFourLosses = quadFourLosses;
     }
 }
