@@ -15,10 +15,10 @@
             <p id="overall-record" th:text="${'(' + team.wins + '-' + team.losses + ')'}"></p>
             <p id="rpi-rank" th:text="${'RPI: ' + team.rpiRank}"></p>
                 <div class="row">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-3">
                         <p class="quadrant-title">Quadrant 1 <span th:text="${'(' + team.quadOneWins + '-' + team.quadOneLosses} + ')'"></span></p>
                         <div class="row">
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- home games -->
                                 <p class="game-site-title">Home (RPI 1-30)</p>
                                 <ul>
@@ -30,7 +30,7 @@
                                     </th:block>
                                 </ul>
                             </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- away games -->
                                 <p class="game-site-title">Away (RPI 1-75)</p>
                                 <ul>
@@ -42,7 +42,7 @@
                                     </th:block>
                                 </ul>
                             </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- neutral games -->
                                 <p class="game-site-title">Neutral (RPI 1-50)</p>
                                 <ul>
@@ -66,10 +66,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-3">
                         <p class="quadrant-title">Quadrant 2 <span th:text="${'(' + team.quadTwoWins + '-' + team.quadTwoLosses} + ')'"></span></p>
                         <div class="row">
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- home games -->
                                 <p class="game-site-title">Home (RPI 31-75)</p>
                                 <ul>
@@ -82,7 +82,7 @@
                                 </ul>
                             </div>
 
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- away games -->
                                 <p class="game-site-title">Away (RPI 76-135)</p>
                                 <ul>
@@ -95,7 +95,7 @@
                                 </ul>
                             </div>
 
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- neutral games -->
                                 <p class="game-site-title">Neutral (RPI 51-100)</p>
                                 <ul>
@@ -119,12 +119,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-3">
                         <p class="quadrant-title">Quadrant 3 <span th:text="${'(' + team.quadThreeWins + '-' + team.quadThreeLosses} + ')'"></span></p>
                         <div class="row">
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- home games -->
                                 <p class="game-site-title">Home (RPI 76-160)</p>
                                 <ul>
@@ -137,7 +135,7 @@
                                 </ul>
                             </div>
 
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- away games -->
                                 <p class="game-site-title">Away (RPI 136-240)</p>
                                 <ul>
@@ -150,7 +148,7 @@
                                 </ul>
                             </div>
 
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- neutral games -->
                                 <p class="game-site-title">Neutral (RPI 101-200)</p>
                                 <ul>
@@ -174,10 +172,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-3">
                         <p class="quadrant-title">Quadrant 4 <span th:text="${'(' + team.quadFourWins + '-' + team.quadFourLosses} + ')'"></span></p>
                         <div class="row">
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- home games -->
                                 <p class="game-site-title">Home (RPI 161+)</p>
                                 <ul>
@@ -190,7 +188,7 @@
                                 </ul>
                             </div>
 
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- away games -->
                                 <p class="game-site-title">Away (RPI 241+)</p>
                                 <ul>
@@ -203,7 +201,7 @@
                                 </ul>
                             </div>
 
-                            <div class="col-12 col-md-4">
+                            <div class="col-12">
                                 <!-- neutral games -->
                                 <p class="game-site-title">Neutral (RPI 201+)</p>
                                 <ul>
@@ -228,6 +226,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
+    </div>
 </body>
 </html>
