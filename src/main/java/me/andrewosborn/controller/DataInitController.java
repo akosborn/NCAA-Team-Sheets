@@ -3,9 +3,7 @@ package me.andrewosborn.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-import me.andrewosborn.model.Conference;
-import me.andrewosborn.model.Game;
-import me.andrewosborn.model.Team;
+import me.andrewosborn.model.*;
 import me.andrewosborn.persistence.ConferenceService;
 import me.andrewosborn.persistence.GameService;
 import me.andrewosborn.persistence.TeamService;
@@ -42,6 +40,29 @@ public class DataInitController
         this.teamService = teamService;
         this.conferenceService = conferenceService;
         this.gameService = gameService;
+    }
+
+    @RequestMapping("set-teams-schedule")
+    public String setSchedule()
+    {
+        for (Game game : gameService.getAll())
+        {
+            Team homeTeam = game.getHomeTeam();
+            Team awayTeam = game.getAwayTeam();
+
+            List<TeamGame> homeTeamGames = TeamUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
+                    game.getAwayScore(), game.getHomeScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.HOME);
+            List<TeamGame> awayTeamGames = TeamUtil.addToTeamSchedule(game.getDate(), awayTeam.getGames(), homeTeam,
+                    game.getHomeScore(), game.getAwayScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.AWAY);
+
+            homeTeam.setGames(homeTeamGames);
+            awayTeam.setGames(awayTeamGames);
+
+            teamService.save(homeTeam);
+            teamService.save(awayTeam);
+        }
+
+        return "Successfully set schedules";
     }
 
     @RequestMapping("/set-teams-games")

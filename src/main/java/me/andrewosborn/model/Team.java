@@ -39,7 +39,7 @@ public class Team
     @Transient
     private Map<Integer, Set<Game>> neutralQuadrantGames;
 
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL)
     private List<TeamGame> games;
 
     private int quadOneWins;

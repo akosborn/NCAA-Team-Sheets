@@ -1,8 +1,8 @@
 package me.andrewosborn.util;
 
-import me.andrewosborn.model.Game;
-import me.andrewosborn.model.Team;
+import me.andrewosborn.model.*;
 
+import java.util.Date;
 import java.util.List;
 
 public class TeamUtil
@@ -15,5 +15,19 @@ public class TeamUtil
             team.setAwayGames(awayGames);
 
         return team;
+    }
+
+    public static List<TeamGame> addToTeamSchedule(Date date, List<TeamGame> games, Team opponent, int opponentScore,
+                                                   int teamOneScore, Site site)
+    {
+        Result result = null;
+        if (teamOneScore > opponentScore)
+            result = Result.W;
+        else
+            result = Result.L;
+        TeamGame teamGame = new TeamGame(date, opponent, teamOneScore, opponentScore, site, result);
+        games.add(teamGame);
+
+        return games;
     }
 }

@@ -53,4 +53,9 @@ public class GameService
     {
         return gameRepository.findByHomeTeamAndAwayTeamAndDate(homeTeam, awayTeam, date);
     }
+
+    public List<Game> getAll()
+    {
+        return gameRepository.findAll();
+    }
 }

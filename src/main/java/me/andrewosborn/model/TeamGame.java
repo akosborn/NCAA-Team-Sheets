@@ -1,8 +1,7 @@
 package me.andrewosborn.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class TeamGame
@@ -10,12 +9,23 @@ public class TeamGame
     public TeamGame()
     {}
 
+    public TeamGame(Date date, Team opponent, int oneScore, int opponentScore, Site site, Result result)
+    {
+        this.date = date;
+        this.opponent = opponent;
+        this.oneScore = oneScore;
+        this.opponentScore = opponentScore;
+        this.site = site;
+        this.result = result;
+    }
+
     @Id
     @GeneratedValue
     private Long id;
-    
-    private Team teamOne;
 
+    private Date date;
+
+    @ManyToOne
     private Team opponent;
 
     private int oneScore;
@@ -23,6 +33,18 @@ public class TeamGame
     private int opponentScore;
 
     private Site site;
+
+    private Result result;
+
+    public Date getDate()
+    {
+        return date;
+    }
+
+    public void setDate(Date date)
+    {
+        this.date = date;
+    }
 
     public Long getId()
     {
@@ -32,16 +54,6 @@ public class TeamGame
     public void setId(Long id)
     {
         this.id = id;
-    }
-
-    public Team getTeamOne()
-    {
-        return teamOne;
-    }
-
-    public void setTeamOne(Team teamOne)
-    {
-        this.teamOne = teamOne;
     }
 
     public Team getOpponent()
@@ -82,5 +94,15 @@ public class TeamGame
     public void setSite(Site site)
     {
         this.site = site;
+    }
+
+    public Result getResult()
+    {
+        return result;
+    }
+
+    public void setResult(Result result)
+    {
+        this.result = result;
     }
 }
