@@ -11,14 +11,15 @@
 <body>
 
     <div layout:fragment="content">
-            <p th:text="${team.name}"></p>
+            <h1 id="team-title" th:text="${team.name}"></h1>
+            <p id="rpi-rank" th:text="${'RPI: ' + team.rpiRank}"></p>
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <p>Quadrant 1</p>
+                        <p class="quadrant-title">Quadrant 1 <span th:text="${'(' + team.quadOneWins + '-' + team.quadOneLosses} + ')'"></span></p>
                         <div class="row">
                             <div class="col-12 col-md-4">
                                 <!-- home games -->
-                                <p class="game-site-title">Home</p>
+                                <p class="game-site-title">Home (RPI 1-30)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.homeQuadrantGames.get(1)}">
                                         <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -30,7 +31,7 @@
                             </div>
                             <div class="col-12 col-md-4">
                                 <!-- away games -->
-                                <p class="game-site-title">Away</p>
+                                <p class="game-site-title">Away (RPI 1-75)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.awayQuadrantGames.get(1)}">
                                         <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -42,7 +43,7 @@
                             </div>
                             <div class="col-12 col-md-4">
                                 <!-- neutral games -->
-                                <p class="game-site-title">Neutral</p>
+                                <p class="game-site-title">Neutral (RPI 1-50)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.neutralQuadrantGames.get(1)}">
                                         <!-- if home team is the opponent -->
@@ -65,11 +66,11 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <p>Quadrant 2</p>
+                        <p class="quadrant-title">Quadrant 2 <span th:text="${'(' + team.quadTwoWins + '-' + team.quadTwoLosses} + ')'"></span></p>
                         <div class="row">
                             <div class="col-12 col-md-4">
                                 <!-- home games -->
-                                <p class="game-site-title">Home</p>
+                                <p class="game-site-title">Home (RPI 31-75)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.homeQuadrantGames.get(2)}">
                                         <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -82,7 +83,7 @@
 
                             <div class="col-12 col-md-4">
                                 <!-- away games -->
-                                <p class="game-site-title">Away</p>
+                                <p class="game-site-title">Away (RPI 76-135)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.awayQuadrantGames.get(2)}">
                                         <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -95,7 +96,7 @@
 
                             <div class="col-12 col-md-4">
                                 <!-- neutral games -->
-                                <p class="game-site-title">Neutral</p>
+                                <p class="game-site-title">Neutral (RPI 51-100)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.neutralQuadrantGames.get(2)}">
                                         <!-- if home team is the opponent -->
@@ -120,11 +121,11 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <p>Quadrant 3</p>
+                        <p class="quadrant-title">Quadrant 3 <span th:text="${'(' + team.quadThreeWins + '-' + team.quadThreeLosses} + ')'"></span></p>
                         <div class="row">
                             <div class="col-12 col-md-4">
                                 <!-- home games -->
-                                <p class="game-site-title">Home</p>
+                                <p class="game-site-title">Home (RPI 76-160)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.homeQuadrantGames.get(3)}">
                                         <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -137,7 +138,7 @@
 
                             <div class="col-12 col-md-4">
                                 <!-- away games -->
-                                <p class="game-site-title">Away</p>
+                                <p class="game-site-title">Away (RPI 136-240)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.awayQuadrantGames.get(3)}">
                                         <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -150,7 +151,7 @@
 
                             <div class="col-12 col-md-4">
                                 <!-- neutral games -->
-                                <p class="game-site-title">Neutral</p>
+                                <p class="game-site-title">Neutral (RPI 101-200)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.neutralQuadrantGames.get(3)}">
                                         <!-- if home team is the opponent -->
@@ -173,11 +174,11 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <p>Quadrant 4</p>
+                        <p class="quadrant-title">Quadrant 4 <span th:text="${'(' + team.quadFourWins + '-' + team.quadFourLosses} + ')'"></span></p>
                         <div class="row">
                             <div class="col-12 col-md-4">
                                 <!-- home games -->
-                                <p class="game-site-title">Home</p>
+                                <p class="game-site-title">Home (RPI 161+)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.homeQuadrantGames.get(4)}">
                                         <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -190,7 +191,7 @@
 
                             <div class="col-12 col-md-4">
                                 <!-- away games -->
-                                <p class="game-site-title">Away</p>
+                                <p class="game-site-title">Away (RPI 241+)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.awayQuadrantGames.get(4)}">
                                         <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
@@ -203,7 +204,7 @@
 
                             <div class="col-12 col-md-4">
                                 <!-- neutral games -->
-                                <p class="game-site-title">Neutral</p>
+                                <p class="game-site-title">Neutral (RPI 201+)</p>
                                 <ul>
                                     <th:block th:each="game : ${team.neutralQuadrantGames.get(4)}">
                                         <!-- if home team is the opponent -->

@@ -24,9 +24,11 @@ public class TeamController
     @RequestMapping(value = "/{teamName}")
     public String getTeamPage(Model model, @PathVariable String teamName)
     {
+        TeamControllerUtil teamControllerUtil = new TeamControllerUtil();
+
         Team team = teamService.getByUrlName(teamName);
-        TeamControllerUtil.setQuadrants(team);
-        model.addAttribute(team);
+        Team updatedTeam = teamService.save(teamControllerUtil.setQuadrants(team));
+        model.addAttribute(updatedTeam);
 
         return "team";
     }

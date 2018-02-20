@@ -39,29 +39,21 @@ public class Team
     @Transient
     private Map<Integer, Set<Game>> neutralQuadrantGames;
 
-//    @OneToMany
-//    private List<Game> quadOneWins;
-//
-//    @OneToMany
-//    private List<Game> quadOneLosses;
-//
-//    @OneToMany
-//    private List<Game> quadTwoWins;
-//
-//    @OneToMany
-//    private List<Game> quadTwoLosses;
-//
-//    @OneToMany
-//    private List<Game> quadThreeWins;
-//
-//    @OneToMany
-//    private List<Game> quadThreeLosses;
-//
-//    @OneToMany
-//    private List<Game> quadFourWins;
-//
-//    @OneToMany
-//    private List<Game> quadFourLosses;
+    private int quadOneWins;
+
+    private int quadTwoWins;
+
+    private int quadThreeWins;
+
+    private int quadFourWins;
+
+    private int quadOneLosses;
+
+    private int quadTwoLosses;
+
+    private int quadThreeLosses;
+
+    private int quadFourLosses;
 
     private int wins;
 
@@ -300,5 +292,85 @@ public class Team
     public void setNeutralQuadrantGames(Map<Integer, Set<Game>> neutralQuadrantGames)
     {
         this.neutralQuadrantGames = neutralQuadrantGames;
+    }
+
+    public int getQuadOneWins()
+    {
+        return quadOneWins;
+    }
+
+    public void setQuadOneWins(int quadOneWins)
+    {
+        this.quadOneWins = quadOneWins;
+    }
+
+    public int getQuadTwoWins()
+    {
+        return quadTwoWins;
+    }
+
+    public void setQuadTwoWins(int quadTwoWins)
+    {
+        this.quadTwoWins = quadTwoWins;
+    }
+
+    public int getQuadThreeWins()
+    {
+        return quadThreeWins;
+    }
+
+    public void setQuadThreeWins(int quadThreeWins)
+    {
+        this.quadThreeWins = quadThreeWins;
+    }
+
+    public int getQuadFourWins()
+    {
+        return quadFourWins;
+    }
+
+    public void setQuadFourWins(int quadFourWins)
+    {
+        this.quadFourWins = quadFourWins;
+    }
+
+    public int getQuadOneLosses()
+    {
+        return quadOneLosses;
+    }
+
+    public void setQuadOneLosses(int quadOneLosses)
+    {
+        this.quadOneLosses = quadOneLosses;
+    }
+
+    public int getQuadTwoLosses()
+    {
+        return quadTwoLosses;
+    }
+
+    public void setQuadTwoLosses(int quadTwoLosses)
+    {
+        this.quadTwoLosses = quadTwoLosses;
+    }
+
+    public int getQuadThreeLosses()
+    {
+        return quadThreeLosses;
+    }
+
+    public void setQuadThreeLosses(int quadThreeLosses)
+    {
+        this.quadThreeLosses = quadThreeLosses;
+    }
+
+    public int getQuadFourLosses()
+    {
+        return quadFourLosses;
+    }
+
+    public void setQuadFourLosses(int quadFourLosses)
+    {
+        this.quadFourLosses = quadFourLosses;
     }
 }

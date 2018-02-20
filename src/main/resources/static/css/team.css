@@ -1,3 +1,11 @@
+#team-title {
+    display: inline;
+}
+
+#rpi-rank {
+    display: inline;
+}
+
 ul {
     list-style-type: none;
     padding-left: 0;
@@ -15,4 +23,9 @@ p {
 
 .game-site-title {
     border-bottom: solid thin black;
+    text-align: center;
+}
+
+.quadrant-title {
+    font-weight: bold;
 }
