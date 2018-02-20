@@ -63,8 +63,8 @@ public class DataInitController
     {
         boolean checkNeutralSites = false;
 
-        LocalDate fromDate = LocalDate.of(2018, 2, 16);
-        LocalDate toDate = LocalDate.of(2018, 2, 16);
+        LocalDate fromDate = LocalDate.of(2018, 2, 18);
+        LocalDate toDate = LocalDate.of(2018, 2, 18);
         List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
         saveGames(gameUrls);
 
