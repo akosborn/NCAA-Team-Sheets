@@ -1,0 +1,18 @@
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.rpi_rank {
+    display: inline-block;
+    text-align: left;
+    width: 3ch;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.game-site-title {
+    border-bottom: solid thin black;
+}

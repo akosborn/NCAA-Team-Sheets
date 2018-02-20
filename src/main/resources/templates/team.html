@@ -6,92 +6,226 @@
       xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <title>TeamSheets</title>
+    <link rel="stylesheet" th:href="@{/css/team.css}">
 </head>
 <body>
 
     <div layout:fragment="content">
-        <div class="container">
             <p th:text="${team.name}"></p>
-            <div class="row">
-                <div class="col-12 col-md-3">
-                    <p>Quadrant 1</p>
-                    <div class="row">
-                        <div class="col-12 col-md-4">
-                            <!-- home games -->
-                            <p>Home</p>
-                            <th:block th:each="game : ${team.homeQuadrantGames.get(1)}">
-                                <p th:text="${game.awayTeam.name}"></p>
-                            </th:block>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <p>Quadrant 1</p>
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <!-- home games -->
+                                <p class="game-site-title">Home</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.homeQuadrantGames.get(1)}">
+                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <!-- away games -->
+                                <p class="game-site-title">Away</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.awayQuadrantGames.get(1)}">
+                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <!-- neutral games -->
+                                <p class="game-site-title">Neutral</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(1)}">
+                                        <!-- if home team is the opponent -->
+                                        <th:block th:if="${game.homeTeam.name != team.name}">
+                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                        <th:block th:if="${game.homeTeam.name == team.name}">
+                                            <!-- if away team is the opponent -->
+                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                    </th:block>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <!-- away games -->
-                            <p>Away</p>
-                            <th:block th:each="game : ${team.awayQuadrantGames.get(1)}">
-                                <p th:text="${game.homeTeam.name}"></p>
-                            </th:block>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <!-- neutral games -->
-                            <p>Neutral</p>
-                            <th:block th:each="game : ${team.neutralQuadrantGames.get(1)}">
-                                <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
-                            </th:block>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p>Quadrant 2</p>
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <!-- home games -->
+                                <p class="game-site-title">Home</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.homeQuadrantGames.get(2)}">
+                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <!-- away games -->
+                                <p class="game-site-title">Away</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.awayQuadrantGames.get(2)}">
+                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <!-- neutral games -->
+                                <p class="game-site-title">Neutral</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(2)}">
+                                        <!-- if home team is the opponent -->
+                                        <th:block th:if="${game.homeTeam.name != team.name}">
+                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                        <th:block th:if="${game.homeTeam.name == team.name}">
+                                            <!-- if away team is the opponent -->
+                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                    </th:block>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-3">
-                    <p>Quadrant 2</p>
-                    <!-- home games -->
-                    <th:block th:each="game : ${team.homeQuadrantGames.get(2)}">
-                        <p th:text="${game.awayTeam.name}"></p>
-                    </th:block>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <p>Quadrant 3</p>
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <!-- home games -->
+                                <p class="game-site-title">Home</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.homeQuadrantGames.get(3)}">
+                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
 
-                    <!-- away games -->
-                    <th:block th:each="game : ${team.awayQuadrantGames.get(2)}">
-                        <p th:text="${game.homeTeam.name}"></p>
-                    </th:block>
+                            <div class="col-12 col-md-4">
+                                <!-- away games -->
+                                <p class="game-site-title">Away</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.awayQuadrantGames.get(3)}">
+                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
 
-                    <!-- neutral games -->
-                    <th:block th:each="game : ${team.neutralQuadrantGames.get(2)}">
-                        <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
-                    </th:block>
-                </div>
-                <div class="col-12 col-md-3">
-                    <p>Quadrant 3</p>
-                    <!-- home games -->
-                    <th:block th:each="game : ${team.homeQuadrantGames.get(3)}">
-                        <p th:text="${game.awayTeam.name}"></p>
-                    </th:block>
+                            <div class="col-12 col-md-4">
+                                <!-- neutral games -->
+                                <p class="game-site-title">Neutral</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(3)}">
+                                        <!-- if home team is the opponent -->
+                                        <th:block th:if="${game.homeTeam.name != team.name}">
+                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                        <th:block th:if="${game.homeTeam.name == team.name}">
+                                            <!-- if away team is the opponent -->
+                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                    </th:block>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p>Quadrant 4</p>
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <!-- home games -->
+                                <p class="game-site-title">Home</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.homeQuadrantGames.get(4)}">
+                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
 
-                    <!-- away games -->
-                    <th:block th:each="game : ${team.awayQuadrantGames.get(3)}">
-                        <p th:text="${game.homeTeam.name}"></p>
-                    </th:block>
+                            <div class="col-12 col-md-4">
+                                <!-- away games -->
+                                <p class="game-site-title">Away</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.awayQuadrantGames.get(4)}">
+                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
 
-                    <!-- neutral games -->
-                    <th:block th:each="game : ${team.neutralQuadrantGames.get(3)}">
-                        <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
-                    </th:block>
-                </div>
-                <div class="col-12 col-md-3">
-                    <p>Quadrant 4</p>
-                    <!-- home games -->
-                    <th:block th:each="game : ${team.homeQuadrantGames.get(4)}">
-                        <p th:text="${game.awayTeam.name}"></p>
-                    </th:block>
-
-                    <!-- away games -->
-                    <th:block th:each="game : ${team.awayQuadrantGames.get(4)}">
-                        <p th:text="${game.homeTeam.name}"></p>
-                    </th:block>
-
-                    <!-- neutral games -->
-                    <th:block th:each="game : ${team.neutralQuadrantGames.get(4)}">
-                        <p th:text="${game.homeTeam.name != team.name} ? ${game.homeTeam.name} : ${game.awayTeam.name}"></p>
-                    </th:block>
+                            <div class="col-12 col-md-4">
+                                <!-- neutral games -->
+                                <p class="game-site-title">Neutral</p>
+                                <ul>
+                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(4)}">
+                                        <!-- if home team is the opponent -->
+                                        <th:block th:if="${game.homeTeam.name != team.name}">
+                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
+                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                        <th:block th:if="${game.homeTeam.name == team.name}">
+                                            <!-- if away team is the opponent -->
+                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
+                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
+                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
+                                            </li>
+                                        </th:block>
+                                    </th:block>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 </body>
 </html>
