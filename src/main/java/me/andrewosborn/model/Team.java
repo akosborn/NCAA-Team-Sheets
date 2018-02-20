@@ -39,6 +39,9 @@ public class Team
     @Transient
     private Map<Integer, Set<Game>> neutralQuadrantGames;
 
+    @Transient
+    private List<TeamGame> games;
+
     private int quadOneWins;
 
     private int quadTwoWins;
@@ -372,5 +375,15 @@ public class Team
     public void setQuadFourLosses(int quadFourLosses)
     {
         this.quadFourLosses = quadFourLosses;
+    }
+
+    public List<TeamGame> getGames()
+    {
+        return games;
+    }
+
+    public void setGames(List<TeamGame> games)
+    {
+        this.games = games;
     }
 }
