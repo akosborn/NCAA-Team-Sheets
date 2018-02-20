@@ -20,15 +20,48 @@ ul {
     width: 3ch;
 }
 
+.game-site {
+    display: inline-block;
+    text-align: right;
+}
+
 p {
     margin-bottom: 0;
 }
 
-.game-site-title {
+.rpi-ranges {
     border-bottom: solid thin black;
     text-align: center;
 }
 
 .quadrant-title {
-    font-weight: bold;
+    text-align: center;
+}
+
+.quadrant-table > tbody > tr > td {
+    padding: 0;
+}
+
+.quadrant-table > thead > tr > th {
+    padding: 0;
+}
+
+.rpi-header {
+    text-align: center;
+}
+
+.team-header {
+    text-align: left;
+}
+
+.site-header {
+    text-align: center;
+}
+
+.rpi-rank-col {
+    text-align: center;
+}
+
+.site-col {
+    text-align: center;
 }

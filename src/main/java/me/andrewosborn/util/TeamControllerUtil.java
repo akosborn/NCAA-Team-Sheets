@@ -52,6 +52,18 @@ public class TeamControllerUtil
         }
     }
 
+    static class RPIComparator implements Comparator<TeamGame>
+    {
+
+        @Override
+        public int compare(TeamGame o1, TeamGame o2)
+        {
+            int o1RpiRank = o1.getOpponent().getRpiRank();
+            int o2RpiRank = o2.getOpponent().getRpiRank();
+            return o1RpiRank > o2RpiRank ? 1 : o1RpiRank == o2RpiRank ? 0 : -1;
+        }
+    }
+
     public Team setQuadrants(Team team)
     {
         Map<Integer, Set<Game>> neutralGamesMap = new HashMap<>();
@@ -168,6 +180,8 @@ public class TeamControllerUtil
 
             game.setQuadrant(quadrant);
         }
+
+        Collections.sort(games, new RPIComparator());
 
         return games;
     }

@@ -15,213 +15,111 @@
             <p id="overall-record" th:text="${'(' + team.wins + '-' + team.losses + ')'}"></p>
             <p id="rpi-rank" th:text="${'RPI: ' + team.rpiRank}"></p>
                 <div class="row">
-                    <div class="col-12 col-md-3">
-                        <p class="quadrant-title">Quadrant 1 <span th:text="${'(' + team.quadOneWins + '-' + team.quadOneLosses} + ')'"></span></p>
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="row">
                             <div class="col-12">
-                                <!-- home games -->
-                                <p class="game-site-title">Home (RPI 1-30)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.homeQuadrantGames.get(1)}">
-                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                        </li>
-                                    </th:block>
-                                </ul>
-                            </div>
-                            <div class="col-12">
-                                <!-- away games -->
-                                <p class="game-site-title">Away (RPI 1-75)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.awayQuadrantGames.get(1)}">
-                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                        </li>
-                                    </th:block>
-                                </ul>
-                            </div>
-                            <div class="col-12">
-                                <!-- neutral games -->
-                                <p class="game-site-title">Neutral (RPI 1-50)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(1)}">
-                                        <!-- if home team is the opponent -->
-                                        <th:block th:if="${game.homeTeam.name != team.name}">
-                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                            </li>
+                                <p class="quadrant-title">Quadrant 1 <span th:text="${'(' + team.quadOneWins + '-' + team.quadOneLosses} + ')'"></span></p>
+                                <p class="rpi-ranges">(H 1-30) (N: 1-50) (A: 1-75)</p>
+                                <table class="quadrant-table table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="rpi-header" scope="col">RPI</th>
+                                            <th class="quadrant-table-text-header" scope="col">Team</th>
+                                            <th class="site-header" scope="col">Site</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <th:block th:each="game : ${team.games}" th:object="${game}">
+                                            <tr th:if="*{quadrant == T(me.andrewosborn.model.Quadrant).ONE}">
+                                                <td class="rpi-rank-col" th:text="*{opponent.rpiRank}"></td>
+                                                <td><a th:text="*{opponent.name}" th:href="@{|/team/${game.opponent.urlName}|}"></a></td>
+                                                <td class="site-col" th:text="*{#strings.substring(site, 0, 1)}"
+                                                    th:style="*{result == T(me.andrewosborn.model.Result).W ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}"></td>
+                                            </tr>
                                         </th:block>
-                                        <th:block th:if="${game.homeTeam.name == team.name}">
-                                            <!-- if away team is the opponent -->
-                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                    </th:block>
-                                </ul>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-3">
-                        <p class="quadrant-title">Quadrant 2 <span th:text="${'(' + team.quadTwoWins + '-' + team.quadTwoLosses} + ')'"></span></p>
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="row">
                             <div class="col-12">
-                                <!-- home games -->
-                                <p class="game-site-title">Home (RPI 31-75)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.homeQuadrantGames.get(2)}">
-                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                        </li>
+                                <p class="quadrant-title">Quadrant 2 <span th:text="${'(' + team.quadTwoWins + '-' + team.quadTwoLosses} + ')'"></span></p>
+                                <p class="rpi-ranges">(H: 31-75) (N: 51-100) (A: 76-135)</p>
+                                <table class="quadrant-table table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th class="rpi-header" scope="col">RPI</th>
+                                        <th class="quadrant-table-text-header" scope="col">Team</th>
+                                        <th class="site-header" scope="col">Site</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block th:each="game : ${team.games}" th:object="${game}">
+                                        <tr th:if="*{quadrant == T(me.andrewosborn.model.Quadrant).TWO}">
+                                            <td class="rpi-rank-col" th:text="*{opponent.rpiRank}"></td>
+                                            <td><a th:text="*{opponent.name}" th:href="@{|/team/${game.opponent.urlName}|}"></a></td>
+                                            <td class="site-col" th:text="*{#strings.substring(site, 0, 1)}"
+                                                th:style="*{result == T(me.andrewosborn.model.Result).W ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}"></td>
+                                        </tr>
                                     </th:block>
-                                </ul>
-                            </div>
-
-                            <div class="col-12">
-                                <!-- away games -->
-                                <p class="game-site-title">Away (RPI 76-135)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.awayQuadrantGames.get(2)}">
-                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                        </li>
-                                    </th:block>
-                                </ul>
-                            </div>
-
-                            <div class="col-12">
-                                <!-- neutral games -->
-                                <p class="game-site-title">Neutral (RPI 51-100)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(2)}">
-                                        <!-- if home team is the opponent -->
-                                        <th:block th:if="${game.homeTeam.name != team.name}">
-                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                        <th:block th:if="${game.homeTeam.name == team.name}">
-                                            <!-- if away team is the opponent -->
-                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                    </th:block>
-                                </ul>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-3">
-                        <p class="quadrant-title">Quadrant 3 <span th:text="${'(' + team.quadThreeWins + '-' + team.quadThreeLosses} + ')'"></span></p>
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="row">
                             <div class="col-12">
-                                <!-- home games -->
-                                <p class="game-site-title">Home (RPI 76-160)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.homeQuadrantGames.get(3)}">
-                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                        </li>
+                                <p class="quadrant-title">Quadrant 3 <span th:text="${'(' + team.quadThreeWins + '-' + team.quadThreeLosses} + ')'"></span></p>
+                                <p class="rpi-ranges">(H: 76-160) (N: 101-200) (A: 136-240)</p>
+                                <table class="quadrant-table table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th class="rpi-header" scope="col">RPI</th>
+                                        <th class="quadrant-table-text-header" scope="col">Team</th>
+                                        <th class="site-header" scope="col">Site</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block th:each="game : ${team.games}" th:object="${game}">
+                                        <tr th:if="*{quadrant == T(me.andrewosborn.model.Quadrant).THREE}">
+                                            <td class="rpi-rank-col" th:text="*{opponent.rpiRank}"></td>
+                                            <td><a th:text="*{opponent.name}" th:href="@{|/team/${game.opponent.urlName}|}"></a></td>
+                                            <td class="site-col" th:text="*{#strings.substring(site, 0, 1)}"
+                                                th:style="*{result == T(me.andrewosborn.model.Result).W ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}"></td>
+                                        </tr>
                                     </th:block>
-                                </ul>
-                            </div>
-
-                            <div class="col-12">
-                                <!-- away games -->
-                                <p class="game-site-title">Away (RPI 136-240)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.awayQuadrantGames.get(3)}">
-                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                        </li>
-                                    </th:block>
-                                </ul>
-                            </div>
-
-                            <div class="col-12">
-                                <!-- neutral games -->
-                                <p class="game-site-title">Neutral (RPI 101-200)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(3)}">
-                                        <!-- if home team is the opponent -->
-                                        <th:block th:if="${game.homeTeam.name != team.name}">
-                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                        <th:block th:if="${game.homeTeam.name == team.name}">
-                                            <!-- if away team is the opponent -->
-                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                    </th:block>
-                                </ul>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-3">
-                        <p class="quadrant-title">Quadrant 4 <span th:text="${'(' + team.quadFourWins + '-' + team.quadFourLosses} + ')'"></span></p>
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="row">
                             <div class="col-12">
-                                <!-- home games -->
-                                <p class="game-site-title">Home (RPI 161+)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.homeQuadrantGames.get(4)}">
-                                        <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                            <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                        </li>
+                                <p class="quadrant-title">Quadrant 4 <span th:text="${'(' + team.quadFourWins + '-' + team.quadFourLosses} + ')'"></span></p>
+                                <p class="rpi-ranges">(H: 161+) (N: 201+) (A: 241+)</p>
+                                <table class="quadrant-table table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th class="rpi-header" scope="col">RPI</th>
+                                        <th class="quadrant-table-text-header" scope="col">Team</th>
+                                        <th class="site-header" scope="col">Site</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block th:each="game : ${team.games}" th:object="${game}">
+                                        <tr th:if="*{quadrant == T(me.andrewosborn.model.Quadrant).FOUR}">
+                                            <td class="rpi-rank-col" th:text="*{opponent.rpiRank}"></td>
+                                            <td><a th:text="*{opponent.name}" th:href="@{|/team/${game.opponent.urlName}|}"></a></td>
+                                            <td class="site-col" th:text="*{#strings.substring(site, 0, 1)}"
+                                                th:style="*{result == T(me.andrewosborn.model.Result).W ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}"></td>
+                                        </tr>
                                     </th:block>
-                                </ul>
-                            </div>
-
-                            <div class="col-12">
-                                <!-- away games -->
-                                <p class="game-site-title">Away (RPI 241+)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.awayQuadrantGames.get(4)}">
-                                        <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                            <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                            <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                        </li>
-                                    </th:block>
-                                </ul>
-                            </div>
-
-                            <div class="col-12">
-                                <!-- neutral games -->
-                                <p class="game-site-title">Neutral (RPI 201+)</p>
-                                <ul>
-                                    <th:block th:each="game : ${team.neutralQuadrantGames.get(4)}">
-                                        <!-- if home team is the opponent -->
-                                        <th:block th:if="${game.homeTeam.name != team.name}">
-                                            <li th:style="${game.awayScore > game.homeScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.homeTeam.rpiRank}"></p>
-                                                <a th:text="${game.homeTeam.name}" th:href="@{|/team/${game.homeTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                        <th:block th:if="${game.homeTeam.name == team.name}">
-                                            <!-- if away team is the opponent -->
-                                            <li th:style="${game.homeScore > game.awayScore ? 'background-color: #A9FFA9' : 'background-color: #FF9999'}">
-                                                <p class="rpi_rank" th:text="${game.awayTeam.rpiRank}"></p>
-                                                <a th:text="${game.awayTeam.name}" th:href="@{|/team/${game.awayTeam.urlName}|}"></a>
-                                            </li>
-                                        </th:block>
-                                    </th:block>
-                                </ul>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
