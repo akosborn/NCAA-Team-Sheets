@@ -25,10 +25,6 @@ ul {
     text-align: right;
 }
 
-p {
-    margin-bottom: 0;
-}
-
 .rpi-ranges {
     border-bottom: solid thin black;
     text-align: center;

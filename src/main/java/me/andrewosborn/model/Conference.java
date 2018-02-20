@@ -18,6 +18,7 @@ public class Conference
     private String urlName;
 
     @OneToMany(cascade = {CascadeType.ALL})
+    @OrderBy("rpiRank asc")
     @JsonIgnoreProperties(value = "conference", allowSetters = true)
     private List<Team> teams;
 

@@ -32,9 +32,9 @@ public class TeamController
     public String getTeamsPage(Model model)
     {
         List<Conference> conferences = conferenceService.getAll();
-        model.addAttribute(conferences);
+        model.addAttribute("conferences", conferences);
 
-        return "teams";
+        return "conferences";
     }
 
     @RequestMapping(value = "/team/{teamName}")

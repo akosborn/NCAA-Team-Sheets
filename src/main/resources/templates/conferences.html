@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout_site"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>TeamSheets</title>
+    <link rel="stylesheet" th:href="@{/css/conferences.css}">
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row">
+            <th:block th:each="conference : ${conferences}" th:object="${conference}">
+                <div class="col-12 col-md-3">
+                    <p class="conf-title" th:text="*{name}"></p>
+                    <table class="conf-table table table-striped">
+                        <thead>
+                        <tr>
+                            <th class="rpi-header" scope="col">RPI</th>
+                            <th class="team-header" scope="col">Team</th>
+                            <th class="wins-header" scope="col">W</th>
+                            <th class="losses-header" scope="col">L</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="team : *{teams}" th:object="${team}">
+                            <tr>
+                                <td class="rpi-rank-col" th:text="*{rpiRank}"></td>
+                                <td><a th:text="*{name}" th:href="@{|/team/*{urlName}|}"></a></td>
+                                <td class="wins-col" th:text="*{wins}"></td>
+                                <td class="losses-col" th:text="*{losses}"></td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</body>
+</html>
