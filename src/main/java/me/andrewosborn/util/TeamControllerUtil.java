@@ -1,7 +1,6 @@
 package me.andrewosborn.util;
 
-import me.andrewosborn.model.Game;
-import me.andrewosborn.model.Team;
+import me.andrewosborn.model.*;
 
 import java.util.*;
 
@@ -11,6 +10,16 @@ public class TeamControllerUtil
     private static Integer QUAD_TWO_KEY = 2;
     private static Integer QUAD_THREE_KEY = 3;
     private static Integer QUAD_FOUR_KEY = 4;
+
+    private static int QUAD_TWO_HOME_MIN = 31;
+    private static int QUAD_TWO_AWAY_MIN = 76;
+    private  static int QUAD_TWO_NEUTRAL_MIN = 51;
+    private static int QUAD_THREE_HOME_MIN = 76;
+    private static int QUAD_THREE_AWAY_MIN = 136;
+    private static int QUAD_THREE_NEUTRAL_MIN = 101;
+    private static int QUAD_FOUR_AWAY_MIN = 241;
+    private static int QUAD_FOUR_NEUTRAL_MIN = 201;
+    private static int QUAD_FOUR_HOME_MIN = 161;
 
     private int quadOneWinCount = 0;
     private int quadOneLossCount = 0;
@@ -45,15 +54,6 @@ public class TeamControllerUtil
 
     public Team setQuadrants(Team team)
     {
-        int QUAD_TWO_HOME_MIN = 31;
-        int QUAD_TWO_AWAY_MIN = 76;
-        int QUAD_TWO_NEUTRAL_MIN = 51;
-        int QUAD_THREE_HOME_MIN = 76;
-        int QUAD_THREE_AWAY_MIN = 136;
-        int QUAD_THREE_NEUTRAL_MIN = 101;
-        int QUAD_FOUR_AWAY_MIN = 241;
-        int QUAD_FOUR_NEUTRAL_MIN = 201;
-
         Map<Integer, Set<Game>> neutralGamesMap = new HashMap<>();
         neutralGamesMap.put(QUAD_ONE_KEY, new TreeSet<>());
         neutralGamesMap.put(QUAD_TWO_KEY, new TreeSet<>());
@@ -149,5 +149,61 @@ public class TeamControllerUtil
         }
 
         return quadrants;
+    }
+
+    public static List<TeamGame> setTeamGameQuadrant(List<TeamGame> games)
+    {
+        for (TeamGame game : games)
+        {
+            int oppRpiRank = game.getOpponent().getRpiRank();
+            Site site = game.getSite();
+
+            Quadrant quadrant = null;
+            if (site.equals(Site.HOME))
+                quadrant = getQuadrantClassification(oppRpiRank, QUAD_TWO_HOME_MIN, QUAD_THREE_HOME_MIN, QUAD_FOUR_HOME_MIN);
+            else if (site.equals(Site.NEUTRAL))
+                quadrant = getQuadrantClassification(oppRpiRank, QUAD_TWO_NEUTRAL_MIN, QUAD_THREE_NEUTRAL_MIN, QUAD_FOUR_NEUTRAL_MIN);
+            else if (site.equals(Site.AWAY))
+                quadrant = getQuadrantClassification(game.getOpponent().getRpiRank(), QUAD_TWO_AWAY_MIN, QUAD_THREE_AWAY_MIN, QUAD_FOUR_AWAY_MIN);
+
+            game.setQuadrant(quadrant);
+        }
+
+        return games;
+    }
+
+    private static Quadrant getQuadrantClassification(int oppRpi, int quadTwoMin, int quadThreeMin, int quadFourMin)
+    {
+        Quadrant quadrant = null;
+
+        if (oppRpi < quadTwoMin)
+            quadrant = Quadrant.ONE;
+        else if (oppRpi >= quadTwoMin && oppRpi < quadThreeMin)
+            quadrant = Quadrant.TWO;
+        else if (oppRpi >= quadThreeMin && oppRpi < quadFourMin)
+            quadrant = Quadrant.THREE;
+        else if (oppRpi >= quadFourMin)
+            quadrant = Quadrant.FOUR;
+
+        return quadrant;
+    }
+
+    public static int[] getQuadrantRecord(List<TeamGame> games, Quadrant quadrant)
+    {
+        int wins = 0;
+        int losses = 0;
+
+        for (TeamGame game : games)
+        {
+            if (game.getQuadrant().equals(quadrant))
+            {
+                if (game.getResult().equals(Result.W))
+                    wins++;
+                else
+                    losses++;
+            }
+        }
+
+        return new int[]{wins, losses};
     }
 }
