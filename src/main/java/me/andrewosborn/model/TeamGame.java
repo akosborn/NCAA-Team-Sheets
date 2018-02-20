@@ -36,6 +36,8 @@ public class TeamGame
 
     private Result result;
 
+    private Quadrant quadrant;
+
     public Date getDate()
     {
         return date;
@@ -104,5 +106,15 @@ public class TeamGame
     public void setResult(Result result)
     {
         this.result = result;
+    }
+
+    public Quadrant getQuadrant()
+    {
+        return quadrant;
+    }
+
+    public void setQuadrant(Quadrant quadrant)
+    {
+        this.quadrant = quadrant;
     }
 }
