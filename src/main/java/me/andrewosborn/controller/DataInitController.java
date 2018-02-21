@@ -42,6 +42,33 @@ public class DataInitController
         this.gameService = gameService;
     }
 
+    @RequestMapping("/set-quadrant-records")
+    public String setQuadrantRecords()
+    {
+        for (Team team : teamService.getAll())
+        {
+            List<TeamGame> teamGames = TeamControllerUtil.setTeamGameQuadrant(team.getGames());
+            team.setGames(teamGames);
+
+            int[] quadOneRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.ONE);
+            team.setQuadOneWins(quadOneRecord[0]);
+            team.setQuadOneLosses(quadOneRecord[1]);
+            int[] quadTwoRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.TWO);
+            team.setQuadTwoWins(quadTwoRecord[0]);
+            team.setQuadTwoLosses(quadTwoRecord[1]);
+            int[] quadThreeRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.THREE);
+            team.setQuadThreeWins(quadThreeRecord[0]);
+            team.setQuadThreeLosses(quadThreeRecord[1]);
+            int[] quadFourRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.FOUR);
+            team.setQuadFourWins(quadFourRecord[0]);
+            team.setQuadFourLosses(quadFourRecord[1]);
+
+            teamService.save(team);
+        }
+
+        return "Set all teams' quadrant records.";
+    }
+
     @RequestMapping("set-teams-schedule")
     public String setSchedule()
     {

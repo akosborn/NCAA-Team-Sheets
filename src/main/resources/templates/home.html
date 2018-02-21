@@ -14,21 +14,29 @@
         <table class="table table-striped rpi-table">
             <thead>
             <tr>
-                <th scope="col">RPI Rank</th>
+                <th class="rpi-rank-header" scope="col">RPI Rank</th>
                 <th scope="col">Team</th>
-                <th scope="col">RPI</th>
-                <th scope="col">Wins</th>
-                <th scope="col">Losses</th>
+                <th class="wins-header" scope="col">W</th>
+                <th class="losses-header" scope="col">L</th>
+                <th class="quadrant-header" scope="col">Q1</th>
+                <th class="quadrant-header" scope="col">Q2</th>
+                <th class="quadrant-header" scope="col">Q3</th>
+                <th class="quadrant-header" scope="col">Q4</th>
+                <th class="rpi-header" scope="col">RPI</th>
             </tr>
             </thead>
             <tbody>
-                <th:block th:each="team, iterStat : ${teams}">
+                <th:block th:each="team, iterStat : ${teams}" th:object="${team}">
                     <tr>
-                        <td th:text="${team.rpiRank}"></td>
-                        <td><a th:href="@{|/team/${team.urlName}|}" th:text="${team.name}"></a></td>
-                        <td th:text="${team.rpi}"></td>
-                        <td th:text="${team.wins}"></td>
-                        <td th:text="${team.losses}"></td>
+                        <td class="rpi-rank-col" th:text="${team.rpiRank}"></td>
+                        <td class="team-col"><a th:href="@{|/team/${team.urlName}|}" th:text="*{name}"></a></td>
+                        <td class="wins-col" th:text="*{wins}"></td>
+                        <td class="losses-col" th:text="*{losses}"></td>
+                        <td class="quadrant-col" th:text="*{quadOneWins + '-' + quadOneLosses}"></td>
+                        <td class="quadrant-col" th:text="*{quadTwoWins + '-' + quadTwoLosses}"></td>
+                        <td class="quadrant-col" th:text="*{quadThreeWins + '-' + quadThreeLosses}"></td>
+                        <td class="quadrant-col" th:text="*{quadFourWins + '-' + quadFourLosses}"></td>
+                        <td class="rpi-col" th:text="*{#numbers.formatDecimal(rpi, 1, 6)}"></td>
                     </tr>
                 </th:block>
             </tbody>

@@ -11,9 +11,11 @@
 <body>
 
     <div layout:fragment="content">
+        <div id="header">
             <h1 id="team-title" th:text="${team.name}"></h1>
             <p id="overall-record" th:text="${'(' + team.wins + '-' + team.losses + ')'}"></p>
             <p id="rpi-rank" th:text="${'RPI: ' + team.rpiRank}"></p>
+        </div>
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-3">
                         <div class="row">

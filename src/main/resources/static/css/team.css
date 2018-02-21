@@ -1,3 +1,7 @@
+#header {
+    margin-bottom: 40px;
+}
+
 #team-title {
     display: inline;
 }
@@ -32,6 +36,7 @@ ul {
 
 .quadrant-title {
     text-align: center;
+    font-weight: bold;
 }
 
 .quadrant-table > tbody > tr > td {
