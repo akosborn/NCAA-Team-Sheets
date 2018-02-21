@@ -1,6 +1,7 @@
 package me.andrewosborn.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import java.util.List;

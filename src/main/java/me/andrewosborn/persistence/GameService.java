@@ -58,4 +58,9 @@ public class GameService
     {
         return gameRepository.findAll();
     }
+
+    public List<Game> getByDate(Date date)
+    {
+        return gameRepository.findByDate(date);
+    }
 }

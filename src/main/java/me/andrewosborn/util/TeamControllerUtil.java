@@ -6,55 +6,8 @@ import java.util.*;
 
 public class TeamControllerUtil
 {
-    private static Integer QUAD_ONE_KEY = 1;
-    private static Integer QUAD_TWO_KEY = 2;
-    private static Integer QUAD_THREE_KEY = 3;
-    private static Integer QUAD_FOUR_KEY = 4;
-
-    private static int QUAD_TWO_HOME_MIN = 31;
-    private static int QUAD_TWO_AWAY_MIN = 76;
-    private  static int QUAD_TWO_NEUTRAL_MIN = 51;
-    private static int QUAD_THREE_HOME_MIN = 76;
-    private static int QUAD_THREE_AWAY_MIN = 136;
-    private static int QUAD_THREE_NEUTRAL_MIN = 101;
-    private static int QUAD_FOUR_AWAY_MIN = 241;
-    private static int QUAD_FOUR_NEUTRAL_MIN = 201;
-    private static int QUAD_FOUR_HOME_MIN = 161;
-
-    private int quadOneWinCount = 0;
-    private int quadOneLossCount = 0;
-    private int quadTwoWinCount = 0;
-    private int quadTwoLossCount = 0;
-    private int quadThreeWinCount = 0;
-    private int quadThreeLossCount = 0;
-    private int quadFourWinCount = 0;
-    private int quadFourLossCount = 0;
-
-    static class HomeRpiComparator implements Comparator<Game>
+    public static class RPIComparator implements Comparator<TeamGame>
     {
-        @Override
-        public int compare(Game o1, Game o2)
-        {
-            int o1Rpi = o1.getAwayTeam().getRpiRank();
-            int o2Rpi = o2.getAwayTeam().getRpiRank();
-            return o1Rpi > o2Rpi ? 1 : o1Rpi == o2Rpi ? 0 : -1;
-        }
-    }
-
-    static class AwayRpiComparator implements Comparator<Game>
-    {
-        @Override
-        public int compare(Game o1, Game o2)
-        {
-            int o1Rpi = o1.getHomeTeam().getRpiRank();
-            int o2Rpi = o2.getHomeTeam().getRpiRank();
-            return o1Rpi > o2Rpi ? 1 : o1Rpi == o2Rpi ? 0 : -1;
-        }
-    }
-
-    static class RPIComparator implements Comparator<TeamGame>
-    {
-
         @Override
         public int compare(TeamGame o1, TeamGame o2)
         {
@@ -62,105 +15,6 @@ public class TeamControllerUtil
             int o2RpiRank = o2.getOpponent().getRpiRank();
             return o1RpiRank > o2RpiRank ? 1 : o1RpiRank == o2RpiRank ? 0 : -1;
         }
-    }
-
-    public Team setQuadrants(Team team)
-    {
-        Map<Integer, Set<Game>> neutralGamesMap = new HashMap<>();
-        neutralGamesMap.put(QUAD_ONE_KEY, new TreeSet<>());
-        neutralGamesMap.put(QUAD_TWO_KEY, new TreeSet<>());
-        neutralGamesMap.put(QUAD_THREE_KEY, new TreeSet<>());
-        neutralGamesMap.put(QUAD_FOUR_KEY, new TreeSet<>());
-
-        Map<Integer, Set<Game>> homeGamesMap = new HashMap<>();
-        homeGamesMap.put(QUAD_ONE_KEY, new TreeSet<>(new HomeRpiComparator()));
-        homeGamesMap.put(QUAD_TWO_KEY, new TreeSet<>(new HomeRpiComparator()));
-        homeGamesMap.put(QUAD_THREE_KEY, new TreeSet<>(new HomeRpiComparator()));
-        homeGamesMap.put(QUAD_FOUR_KEY, new TreeSet<>(new HomeRpiComparator()));
-
-        Map<Integer, Set<Game>> awayGamesMap = new HashMap<>();
-        awayGamesMap.put(QUAD_ONE_KEY, new TreeSet<>(new AwayRpiComparator()));
-        awayGamesMap.put(QUAD_TWO_KEY, new TreeSet<>(new AwayRpiComparator()));
-        awayGamesMap.put(QUAD_THREE_KEY, new TreeSet<>(new AwayRpiComparator()));
-        awayGamesMap.put(QUAD_FOUR_KEY, new TreeSet<>(new AwayRpiComparator()));
-
-        List<Game> homeGames = team.getHomeGames();
-        for (Game game : homeGames)
-        {
-            int oppRpi = game.getAwayTeam().getRpiRank();
-            int oppScore = game.getAwayScore();
-            int teamScore = game.getHomeScore();
-            boolean win = teamScore > oppScore;
-            if (game.isNeutralSite())
-                neutralGamesMap = addToListByQuadrant(neutralGamesMap, game, win, oppRpi, QUAD_TWO_NEUTRAL_MIN, QUAD_THREE_NEUTRAL_MIN, QUAD_FOUR_NEUTRAL_MIN);
-            else
-                homeGamesMap = addToListByQuadrant(homeGamesMap, game, win, oppRpi, QUAD_TWO_HOME_MIN, QUAD_THREE_HOME_MIN, QUAD_FOUR_NEUTRAL_MIN);
-        }
-
-        List<Game> awayGames = team.getAwayGames();
-        for (Game game : awayGames)
-        {
-            int oppRpi = game.getHomeTeam().getRpiRank();
-            int oppScore = game.getHomeScore();
-            int teamScore = game.getAwayScore();
-            boolean win = teamScore > oppScore;
-            if (game.isNeutralSite())
-                neutralGamesMap = addToListByQuadrant(neutralGamesMap, game, win, oppRpi, QUAD_TWO_NEUTRAL_MIN, QUAD_THREE_NEUTRAL_MIN, QUAD_FOUR_NEUTRAL_MIN);
-            else
-                awayGamesMap = addToListByQuadrant(awayGamesMap, game, win, oppRpi, QUAD_TWO_AWAY_MIN, QUAD_THREE_AWAY_MIN, QUAD_FOUR_AWAY_MIN);
-        }
-
-        team.setNeutralQuadrantGames(neutralGamesMap);
-        team.setHomeQuadrantGames(homeGamesMap);
-        team.setAwayQuadrantGames(awayGamesMap);
-        team.setQuadOneWins(quadOneWinCount);
-        team.setQuadOneLosses(quadOneLossCount);
-        team.setQuadTwoWins(quadTwoWinCount);
-        team.setQuadTwoLosses(quadTwoLossCount);
-        team.setQuadThreeWins(quadThreeWinCount);
-        team.setQuadFourWins(quadFourWinCount);
-        team.setQuadFourLosses(quadFourLossCount);
-
-        return team;
-    }
-
-    private Map<Integer, Set<Game>> addToListByQuadrant(Map<Integer, Set<Game>> quadrants, Game game, boolean win,
-                                                               int oppRpi, int quadTwoMin, int quadThreeMin, int quadFourMin)
-    {
-        if (oppRpi < quadTwoMin)
-        {
-            quadrants.get(QUAD_ONE_KEY).add(game);
-            if (win)
-                quadOneWinCount++;
-            else
-                quadOneLossCount++;
-        }
-        else if (oppRpi >= quadTwoMin && oppRpi < quadThreeMin)
-        {
-            quadrants.get(QUAD_TWO_KEY).add(game);
-            if (win)
-                quadTwoWinCount++;
-            else
-                quadTwoLossCount++;
-        }
-        else if (oppRpi >= quadThreeMin && oppRpi < quadFourMin)
-        {
-            quadrants.get(QUAD_THREE_KEY).add(game);
-            if (win)
-                quadThreeWinCount++;
-            else
-                quadThreeLossCount++;
-        }
-        else if (oppRpi >= quadFourMin)
-        {
-            quadrants.get(QUAD_FOUR_KEY).add(game);
-            if (win)
-                quadFourWinCount++;
-            else
-                quadFourLossCount++;
-        }
-
-        return quadrants;
     }
 
     public static List<TeamGame> setTeamGameQuadrant(List<TeamGame> games)
@@ -171,6 +25,15 @@ public class TeamControllerUtil
             Site site = game.getSite();
 
             Quadrant quadrant = null;
+            int QUAD_TWO_HOME_MIN = 31;
+            int QUAD_TWO_AWAY_MIN = 76;
+            int QUAD_TWO_NEUTRAL_MIN = 51;
+            int QUAD_THREE_HOME_MIN = 76;
+            int QUAD_THREE_AWAY_MIN = 136;
+            int QUAD_THREE_NEUTRAL_MIN = 101;
+            int QUAD_FOUR_AWAY_MIN = 241;
+            int QUAD_FOUR_NEUTRAL_MIN = 201;
+            int QUAD_FOUR_HOME_MIN = 161;
             if (site.equals(Site.HOME))
                 quadrant = getQuadrantClassification(oppRpiRank, QUAD_TWO_HOME_MIN, QUAD_THREE_HOME_MIN, QUAD_FOUR_HOME_MIN);
             else if (site.equals(Site.NEUTRAL))
@@ -181,6 +44,7 @@ public class TeamControllerUtil
             game.setQuadrant(quadrant);
         }
 
+        // sort by rpi from highest to lowest
         Collections.sort(games, new RPIComparator());
 
         return games;
@@ -202,7 +66,7 @@ public class TeamControllerUtil
         return quadrant;
     }
 
-    public static int[] getQuadrantRecord(List<TeamGame> games, Quadrant quadrant)
+    private static int[] getQuadrantRecord(List<TeamGame> games, Quadrant quadrant)
     {
         int wins = 0;
         int losses = 0;
@@ -219,5 +83,113 @@ public class TeamControllerUtil
         }
 
         return new int[]{wins, losses};
+    }
+
+    public static Team setQuadrantRecords(Team team)
+    {
+        List<TeamGame> teamGames = TeamControllerUtil.setTeamGameQuadrant(team.getGames());
+        team.setGames(teamGames);
+
+        int[] quadOneRecord = getQuadrantRecord(team.getGames(), Quadrant.ONE);
+        team.setQuadOneWins(quadOneRecord[0]);
+        team.setQuadOneLosses(quadOneRecord[1]);
+        int[] quadTwoRecord = getQuadrantRecord(team.getGames(), Quadrant.TWO);
+        team.setQuadTwoWins(quadTwoRecord[0]);
+        team.setQuadTwoLosses(quadTwoRecord[1]);
+        int[] quadThreeRecord = getQuadrantRecord(team.getGames(), Quadrant.THREE);
+        team.setQuadThreeWins(quadThreeRecord[0]);
+        team.setQuadThreeLosses(quadThreeRecord[1]);
+        int[] quadFourRecord = getQuadrantRecord(team.getGames(), Quadrant.FOUR);
+        team.setQuadFourWins(quadFourRecord[0]);
+        team.setQuadFourLosses(quadFourRecord[1]);
+
+        return team;
+    }
+
+    public static Team calculateRecord(Team team)
+    {
+        int homeWins = 0;
+        int homeLosses = 0;
+        int awayWins = 0;
+        int awayLosses = 0;
+        int neutralWins = 0;
+        int neutralLosses = 0;
+
+        for (TeamGame game : team.getGames())
+        {
+            Result result = game.getResult();
+            Site site = game.getSite();
+
+            if (site.equals(Site.HOME))
+            {
+                if (result.equals(Result.W))
+                {
+                    homeWins++;
+                }
+                else
+                {
+                    homeLosses++;
+                }
+            }
+            else if (site.equals(Site.AWAY))
+            {
+                if (result.equals(Result.W))
+                    awayWins++;
+                else
+                    awayLosses++;
+            }
+            else
+            {
+                if (result.equals(Result.W))
+                    neutralWins++;
+                else
+                    neutralLosses++;
+            }
+        }
+
+        int wins = homeWins + awayWins + neutralWins;
+        int losses = homeLosses + awayLosses + neutralLosses;
+        team.setWins(wins);
+        team.setLosses(losses);
+        team.setHomeWins(homeWins);
+        team.setHomeLosses(homeLosses);
+        team.setAwayWins(awayWins);
+        team.setAwayLosses(awayLosses);
+        team.setNeutralWins(neutralWins);
+        team.setNeutralLosses(neutralLosses);
+        team.setWinPct(calculateWinPct(wins, losses));
+
+        return team;
+    }
+
+    private static float calculateWinPct(int wins, int losses)
+    {
+        float winPct = (float) wins / (wins + losses);
+        int DECIMAL_PLACES = 10;
+        return RoundingUtil.round(winPct, DECIMAL_PLACES);
+    }
+
+    public static Team setTeamGames(Team team, List<Game> homeGames, List<Game> awayGames)
+    {
+        if (!homeGames.isEmpty())
+            team.setHomeGames(homeGames);
+        if (!awayGames.isEmpty())
+            team.setAwayGames(awayGames);
+
+        return team;
+    }
+
+    public static List<TeamGame> addToTeamSchedule(Date date, List<TeamGame> games, Team opponent, int opponentScore,
+                                                   int teamOneScore, Site site)
+    {
+        Result result = null;
+        if (teamOneScore > opponentScore)
+            result = Result.W;
+        else
+            result = Result.L;
+        TeamGame teamGame = new TeamGame(date, opponent, teamOneScore, opponentScore, site, result);
+        games.add(teamGame);
+
+        return games;
     }
 }

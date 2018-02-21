@@ -16,6 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.NonUniqueResultException;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -42,96 +44,56 @@ public class DataInitController
         this.gameService = gameService;
     }
 
-    @RequestMapping("/set-quadrant-records")
-    public String setQuadrantRecords()
+    @RequestMapping("/add-games")
+    public String home(@RequestParam(value = "year") int year,
+                       @RequestParam(value = "month") int month,
+                       @RequestParam(value = "day") int day)
     {
-        for (Team team : teamService.getAll())
-        {
-            List<TeamGame> teamGames = TeamControllerUtil.setTeamGameQuadrant(team.getGames());
-            team.setGames(teamGames);
+        boolean checkNeutralSites = false;
 
-            int[] quadOneRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.ONE);
-            team.setQuadOneWins(quadOneRecord[0]);
-            team.setQuadOneLosses(quadOneRecord[1]);
-            int[] quadTwoRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.TWO);
-            team.setQuadTwoWins(quadTwoRecord[0]);
-            team.setQuadTwoLosses(quadTwoRecord[1]);
-            int[] quadThreeRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.THREE);
-            team.setQuadThreeWins(quadThreeRecord[0]);
-            team.setQuadThreeLosses(quadThreeRecord[1]);
-            int[] quadFourRecord = TeamControllerUtil.getQuadrantRecord(team.getGames(), Quadrant.FOUR);
-            team.setQuadFourWins(quadFourRecord[0]);
-            team.setQuadFourLosses(quadFourRecord[1]);
+        // save games in range of dates from game urls
+        LocalDate fromDate = LocalDate.of(year, month, day);
+        LocalDate toDate = LocalDate.of(year, month, day);
+        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
+        saveGames(gameUrls);
 
-            teamService.save(team);
-        }
-
-        return "Set all teams' quadrant records.";
-    }
-
-    @RequestMapping("set-teams-schedule")
-    public String setSchedule()
-    {
-        for (Game game : gameService.getAll())
+        // add games newly-added day to teams' schedules, calculate records, and save
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        Date date = calendar.getTime();
+        for (Game game : gameService.getByDate(date))
         {
             Team homeTeam = game.getHomeTeam();
             Team awayTeam = game.getAwayTeam();
 
-            List<TeamGame> homeTeamGames = TeamUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
+            List<TeamGame> homeTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
                     game.getAwayScore(), game.getHomeScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.HOME);
-            List<TeamGame> awayTeamGames = TeamUtil.addToTeamSchedule(game.getDate(), awayTeam.getGames(), homeTeam,
-                    game.getHomeScore(), game.getAwayScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.AWAY);
-
             homeTeam.setGames(homeTeamGames);
-            awayTeam.setGames(awayTeamGames);
-
+            homeTeam = TeamControllerUtil.calculateRecord(homeTeam);
             teamService.save(homeTeam);
+
+            List<TeamGame> awayTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), awayTeam.getGames(), homeTeam,
+                    game.getHomeScore(), game.getAwayScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.AWAY);
+            awayTeam.setGames(awayTeamGames);
+            awayTeam = TeamControllerUtil.calculateRecord(awayTeam);
             teamService.save(awayTeam);
         }
 
-        return "Successfully set schedules";
-    }
-
-    @RequestMapping("/set-teams-games")
-    public String setTeamsGames()
-    {
-        for (Team team : teamService.getAll())
+        if (checkNeutralSites)
         {
-            // Set team's games
-            List<Game> homeGames = gameService.getHomeGamesByTeam(team);
-            List<Game> awayGames = gameService.getAwayGamesByTeam(team);
-            teamService.save(TeamUtil.setTeamGames(team, homeGames, awayGames));
-        }
-
-        return "Set teams' games";
-    }
-
-    @RequestMapping("/add-new-games")
-    public String home()
-    {
-        boolean checkNeutralSites = false;
-
-        LocalDate fromDate = LocalDate.of(2018, 2, 19);
-        LocalDate toDate = LocalDate.of(2018, 2, 19);
-        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
-        saveGames(gameUrls);
-
-        for (Team team : teamService.getAll())
-        {
-            // Set team's games
-            List<Game> homeGames = gameService.getHomeGamesByTeam(team);
-            List<Game> awayGames = gameService.getAwayGamesByTeam(team);
-            teamService.save(TeamUtil.setTeamGames(team, homeGames, awayGames));
-
-            if (checkNeutralSites)
+            for (Team team : teamService.getAll())
             {
                 // Check for new neutral site games and update and save as necessary
-                List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, 2);
-                for (Date date : neutralDates)
+                List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, month);
+                for (Date neutralDate : neutralDates)
                 {
                     try
                     {
-                        List<Game> games = gameService.getByTeamAndDate(team, date);
+                        List<Game> games = gameService.getByTeamAndDate(team, neutralDate);
                         for (Game game : games)
                         {
                             if (game.isNeutralSite())
@@ -146,47 +108,24 @@ public class DataInitController
                     }
                 }
             }
-
-            // Calculate detailed overall, home, away, and neutral records
-            team = CalculateResult.calculateRecord(team);
-            teamService.save(team);
         }
 
-        return "Added games from " + fromDate + " to " + toDate;
+        return "Updated RPI to account for " + date + " games.";
     }
 
-    @RequestMapping("calculate-records")
-    public String calculateRecords()
+    @RequestMapping("/rpi")
+    public String calculateRpi()
     {
         for (Team team : teamService.getAll())
         {
-            // Calculate detailed overall, home, away, and neutral records
-            team = CalculateResult.calculateRecord(team);
+            team = TeamControllerUtil.calculateRecord(team);
             teamService.save(team);
-        }
-
-        return "Records calculated";
-    }
-
-    @RequestMapping("update-metrics")
-    public String updateMetrics()
-    {
-        // Update win percent
-        for (Team team : teamService.getAll())
-        {
-            float winPct = CalculateResult.calculateWinPct(team.getWins(), team.getLosses());
-            // Only update if it has changed
-            if (winPct != team.getWinPct())
-            {
-                team.setWinPct(winPct);
-                teamService.save(team);
-            }
         }
 
         // Calculate RPI
         for (Team team : teamService.getAll())
         {
-            float rpi = RPICalculation.calculateRPI(team);
+            float rpi = RpiUtil.calculateRPI(team);
             team.setRpi(rpi);
             teamService.save(team);
         }
@@ -200,33 +139,37 @@ public class DataInitController
             teamService.save(team);
         }
 
-        return "RPI updated for all teams";
-    }
-
-    @RequestMapping("/read-url")
-    public List<String> readUrl()
-    {
-        List<String> neutralSiteOpponents = ESPNUtil.getScheduleUrls(
-                "http://www.espn.com/mens-college-basketball/team/schedule/_/id/261/vermont-catamounts");
-        Team currentTeam = teamService.getByName("Vermont");
-        for (String teamName : neutralSiteOpponents)
+        for (Team team : teamService.getAll())
         {
-            Team team = teamService.getByName(teamName);
-            if (team != null)
-            {
-                gameService.getByTeams(currentTeam, team);
-            }
+            List<TeamGame> games = TeamControllerUtil.setTeamGameQuadrant(team.getGames());
+            team.setGames(games);
+            team = TeamControllerUtil.setQuadrantRecords(team);
+            teamService.save(team);
         }
 
-        return neutralSiteOpponents;
+        return "Calculated RPI.";
     }
 
-    @RequestMapping("/parse-records")
-    public String parseRecords()
+    @RequestMapping("/opponents")
+    public String setGames()
     {
-        NCAAUtil.parseNittyGrittyPDF("https://extra.ncaa.org/solutions/rpi/Stats%20Library/Feb.%2014,%202018%20Nitty%20Gritty.pdf");
+        for (Game game : gameService.getAll())
+        {
+            Team homeTeam = game.getHomeTeam();
+            Team awayTeam = game.getAwayTeam();
 
-        return "Hi";
+            List<TeamGame> homeTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
+                    game.getAwayScore(), game.getHomeScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.HOME);
+            homeTeam.setGames(homeTeamGames);
+            teamService.save(homeTeam);
+
+            List<TeamGame> awayTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), awayTeam.getGames(), homeTeam,
+                    game.getHomeScore(), game.getAwayScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.AWAY);
+            awayTeam.setGames(awayTeamGames);
+            teamService.save(awayTeam);
+        }
+
+        return "Set all schedules.";
     }
 
     private void saveData(LocalDate fromDate, LocalDate toDate)
