@@ -5,7 +5,7 @@
 
 	<groupId>me.andrewosborn</groupId>
 	<artifactId>quadrantology</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>war</packaging>
 
 	<name>quadrantology</name>
