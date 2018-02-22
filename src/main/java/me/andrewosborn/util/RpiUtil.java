@@ -5,8 +5,6 @@ import me.andrewosborn.model.Result;
 import me.andrewosborn.model.Team;
 import me.andrewosborn.model.TeamGame;
 
-import java.util.List;
-
 /***
  * @see <a href="https://en.wikipedia.org/wiki/Rating_percentage_index#Basketball_formula"</a>
  */
