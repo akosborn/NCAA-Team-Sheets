@@ -1,5 +1,5 @@
 .rpi-table > tbody > tr > td, .rpi-table > thead > tr > th {
-    padding: 0;
+    padding: 1px;
 }
 
 .rpi-header, .rpi-rank-header, .rpi-rank-col, .site-col, .wins-header, .losses-header,
@@ -8,7 +8,7 @@
 }
 
 .team-col {
-    max-width: 50px;
+    min-width: 55px;
 }
 
 .team-header {
@@ -21,4 +21,5 @@
 
 .quadrant-col, .wins-col, .losses-col {
     width: 5ch;
+    min-width: 5ch;
 }

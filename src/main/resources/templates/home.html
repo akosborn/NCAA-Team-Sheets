@@ -12,21 +12,22 @@
 
     <div layout:fragment="content">
         <p>Through 2/20/16 games</p>
-        <table class="table table-striped rpi-table">
-            <thead>
-            <tr>
-                <th class="rpi-rank-header" scope="col">RPI Rank</th>
-                <th scope="col">Team</th>
-                <th class="wins-header" scope="col">W</th>
-                <th class="losses-header" scope="col">L</th>
-                <th class="quadrant-header" scope="col">Q1</th>
-                <th class="quadrant-header" scope="col">Q2</th>
-                <th class="quadrant-header" scope="col">Q3</th>
-                <th class="quadrant-header" scope="col">Q4</th>
-                <th class="rpi-header" scope="col">RPI</th>
-            </tr>
-            </thead>
-            <tbody>
+        <div class="table-responsive">
+            <table class="table table-striped rpi-table">
+                <thead>
+                <tr>
+                    <th class="rpi-rank-header" scope="col">RPI Rank</th>
+                    <th scope="col">Team</th>
+                    <th class="wins-header" scope="col">W</th>
+                    <th class="losses-header" scope="col">L</th>
+                    <th class="quadrant-header" scope="col">Q1</th>
+                    <th class="quadrant-header" scope="col">Q2</th>
+                    <th class="quadrant-header" scope="col">Q3</th>
+                    <th class="quadrant-header" scope="col">Q4</th>
+                    <th class="rpi-header" scope="col">RPI</th>
+                </tr>
+                </thead>
+                <tbody>
                 <th:block th:each="team, iterStat : ${teams}" th:object="${team}">
                     <tr>
                         <td class="rpi-rank-col" th:text="${team.rpiRank}"></td>
@@ -40,8 +41,9 @@
                         <td class="rpi-col" th:text="*{#numbers.formatDecimal(rpi, 1, 6)}"></td>
                     </tr>
                 </th:block>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
