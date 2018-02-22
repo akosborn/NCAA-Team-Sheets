@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>me.andrewosborn</groupId>
-	<artifactId>ncaa_team_sheets</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<artifactId>quadrantology</artifactId>
+	<version>1.0.0</version>
+	<packaging>war</packaging>
 
-	<name>ncaa_team_sheets</name>
+	<name>quadrantology</name>
 	<description></description>
 
 	<parent>
@@ -56,11 +56,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-			<version>2.0.8</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.11.2</version>
@@ -96,6 +91,11 @@
 			<groupId>org.webjars.bower</groupId>
 			<artifactId>tether</artifactId>
 			<version>1.4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

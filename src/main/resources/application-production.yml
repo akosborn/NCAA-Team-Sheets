@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ncaa_team_sheets
+  datasource:
+    url: jdbc:mysql://quadrantology.czr7bszbmkqo.us-east-1.rds.amazonaws.com:3306/quadrantology-prod
+    username: akosborn
+    password: Osbo_789101112
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  thymeleaf:
+    cache: true
