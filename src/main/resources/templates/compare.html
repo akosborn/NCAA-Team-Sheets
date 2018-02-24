@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout_site"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Quadrantology</title>
+    <link rel="stylesheet" th:href="@{/css/compare.css}">
+</head>
+<body>
+
+    <div layout:fragment="content">
+        <div class="row" id="teams">
+            <th:block th:each="team,iterStat : ${teams}" th:object="${team}">
+                <th:block th:if="${iterStat.count == 2}">
+                    <div class="col-2 labels">
+                        <h3>&nbsp;</h3>
+                        <p>RECORD</p>
+                        <p>WIN %</p>
+                        <p>RPI</p>
+                        <p>Q1</p>
+                        <p>Q2</p>
+                        <p>Q3</p>
+                        <p>Q4</p>
+                        <p>HOME</p>
+                        <p>AWAY</p>
+                        <p>BEST W</p>
+                        <p>WORST L</p>
+                    </div>
+                </th:block>
+                <div class="col-5 team-side">
+                    <h3 class="team-title" th:text="${team.name}"></h3>
+                    <p class="overall-record" th:text="${team.wins + '-' + team.losses}"></p>
+                    <P class="win-pct" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></P>
+                    <p class="rpi-rank" th:text="${team.rpiRank}"></p>
+                    <p th:text="*{quadOneWins + '-' + quadOneLosses}"></p>
+                    <p th:text="*{quadTwoWins + '-' + quadTwoLosses}"></p>
+                    <p th:text="*{quadThreeWins + '-' + quadThreeLosses}"></p>
+                    <p th:text="*{quadFourWins + '-' + quadFourLosses}"></p>
+                    <p th:text="*{homeWins + '-' + homeLosses}"></p>
+                    <p th:text="*{awayWins + '-' + awayLosses}"></p>
+                    <p th:text="*{bestWin.opponent.name + ' (' + bestWin.opponent.rpiRank + ')'}"></p>
+                    <p th:text="*{worstLoss.opponent.name + ' (' + worstLoss.opponent.rpiRank + ')'}"></p>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</body>
+</html>

@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class TeamController
         Team team = teamService.getByUrlName(teamName);
         Collections.sort(team.getGames(), new TeamControllerUtil.RPIComparator());
         model.addAttribute("team", team);
+
+        List<Team> teams = teamService.getAllOrderByName();
+        model.addAttribute("teams", teams);
 
         return "team";
     }

@@ -81,6 +81,12 @@ public class Team
 
     private float winPct;
 
+    @Transient
+    private TeamGame bestWin;
+
+    @Transient
+    private TeamGame worstLoss;
+
     public Team(String name, String urlName, Conference conference)
     {
         this.name = name;
@@ -386,5 +392,25 @@ public class Team
     public void setGames(List<TeamGame> games)
     {
         this.games = games;
+    }
+
+    public TeamGame getBestWin()
+    {
+        return bestWin;
+    }
+
+    public void setBestWin(TeamGame bestWin)
+    {
+        this.bestWin = bestWin;
+    }
+
+    public TeamGame getWorstLoss()
+    {
+        return worstLoss;
+    }
+
+    public void setWorstLoss(TeamGame worstLoss)
+    {
+        this.worstLoss = worstLoss;
     }
 }
