@@ -20,6 +20,7 @@
                     <th scope="col">Team</th>
                     <th class="wins-header" scope="col">W</th>
                     <th class="losses-header" scope="col">L</th>
+                    <th class="win-pct-header" scope="col">Win %</th>
                     <th class="quadrant-header" scope="col">Q1</th>
                     <th class="quadrant-header" scope="col">Q2</th>
                     <th class="quadrant-header" scope="col">Q3</th>
@@ -34,6 +35,7 @@
                         <td class="team-col"><a th:href="@{|/team/${team.urlName}|}" th:text="*{name}"></a></td>
                         <td class="wins-col" th:text="*{wins}"></td>
                         <td class="losses-col" th:text="*{losses}"></td>
+                        <td class="win-pct-col" th:text="*{winPct}"></td>
                         <td class="quadrant-col" th:text="*{quadOneWins + '-' + quadOneLosses}"></td>
                         <td class="quadrant-col" th:text="*{quadTwoWins + '-' + quadTwoLosses}"></td>
                         <td class="quadrant-col" th:text="*{quadThreeWins + '-' + quadThreeLosses}"></td>
