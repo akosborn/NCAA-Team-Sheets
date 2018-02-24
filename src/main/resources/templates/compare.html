@@ -14,8 +14,8 @@
         <div class="row" id="teams">
             <th:block th:each="team,iterStat : ${teams}" th:object="${team}">
                 <th:block th:if="${iterStat.count == 2}">
-                    <div class="col-md-2 labels">
-                        <h1>&nbsp;</h1>
+                    <div class="col-2 labels">
+                        <h3>&nbsp;</h3>
                         <p>RECORD</p>
                         <p>WIN %</p>
                         <p>RPI</p>
@@ -25,10 +25,12 @@
                         <p>Q4</p>
                         <p>HOME</p>
                         <p>AWAY</p>
+                        <p>BEST W</p>
+                        <p>WORST L</p>
                     </div>
                 </th:block>
-                <div class="col-12 col-md-5 team-side">
-                    <h1 class="team-title" th:text="${team.name}"></h1>
+                <div class="col-5 team-side">
+                    <h3 class="team-title" th:text="${team.name}"></h3>
                     <p class="overall-record" th:text="${team.wins + '-' + team.losses}"></p>
                     <P class="win-pct" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></P>
                     <p class="rpi-rank" th:text="${team.rpiRank}"></p>
@@ -38,6 +40,8 @@
                     <p th:text="*{quadFourWins + '-' + quadFourLosses}"></p>
                     <p th:text="*{homeWins + '-' + homeLosses}"></p>
                     <p th:text="*{awayWins + '-' + awayLosses}"></p>
+                    <p th:text="*{bestWin.opponent.name + ' (' + bestWin.opponent.rpiRank + ')'}"></p>
+                    <p th:text="*{worstLoss.opponent.name + ' (' + worstLoss.opponent.rpiRank + ')'}"></p>
                 </div>
             </th:block>
         </div>
