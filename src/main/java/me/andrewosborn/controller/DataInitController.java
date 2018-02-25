@@ -157,6 +157,7 @@ public class DataInitController
         {
             float strengthOfSchedule = RpiUtil.calculateStrengthOfSchedule(team);
             team.setStrengthOfSchedule(strengthOfSchedule);
+            teamService.save(team);
         }
 
         List<Team> teamsBySoS = teamService.getAllOrderBySoSDesc();
