@@ -23,6 +23,14 @@ public class RpiUtil
         return (weightedWinPct * WIN_PCT_RPI_PCT) + (oppAvgWinPct * OPP_WIN_PCT_RPI_PCT) + (oppOppWinPct * OPP_OPP_WIN_PCT_RPI_PCT);
     }
 
+    public static float calculateStrengthOfSchedule(Team team)
+    {
+        float oppAvgWinPct = calculateOpponentsAvgWinPct(team);
+        float oppOppWinPct = calculateAvgOppOppWinPct(team);
+
+        return ((oppAvgWinPct * 2) / 3) + (oppOppWinPct / 3);
+    }
+
     private static float calculateWeightedWinPct(Team team)
     {
         float HOME_WIN_MULTIPLIER = 0.6f;

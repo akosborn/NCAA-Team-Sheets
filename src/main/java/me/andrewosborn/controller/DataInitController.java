@@ -135,7 +135,7 @@ public class DataInitController
         for (int i = 0; i < teamsByRpi.size(); i++)
         {
             Team team = teamsByRpi.get(i);
-            team.setRpiRank(i+1);
+            team.setRpiRank(i + 1);
             teamService.save(team);
         }
 
@@ -148,6 +148,26 @@ public class DataInitController
         }
 
         return "Calculated RPI.";
+    }
+
+    @RequestMapping("/sos")
+    public String setStrengthOfSchedule()
+    {
+        for (Team team : teamService.getAll())
+        {
+            float strengthOfSchedule = RpiUtil.calculateStrengthOfSchedule(team);
+            team.setStrengthOfSchedule(strengthOfSchedule);
+        }
+
+        List<Team> teamsBySoS = teamService.getAllOrderBySoSDesc();
+        for (int i = 0; i < teamsBySoS.size(); i++)
+        {
+            Team team = teamsBySoS.get(i);
+            team.setStrengthOfScheduleRank(i + 1);
+            teamService.save(team);
+        }
+
+        return "Strength of schedule calculated";
     }
 
     @RequestMapping("/opponents")

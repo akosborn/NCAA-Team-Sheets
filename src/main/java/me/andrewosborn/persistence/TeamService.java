@@ -51,4 +51,9 @@ public class TeamService
     {
         return teamRepository.findAllByOrderByNameAsc();
     }
+
+    public List<Team> getAllOrderBySoSDesc()
+    {
+        return teamRepository.findAllByOrderByStrengthOfScheduleDesc();
+    }
 }
