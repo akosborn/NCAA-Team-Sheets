@@ -19,6 +19,7 @@
                         <p>RECORD</p>
                         <p>WIN %</p>
                         <p>RPI</p>
+                        <p>SOS</p>
                         <p>Q1</p>
                         <p>Q2</p>
                         <p>Q3</p>
@@ -34,6 +35,7 @@
                     <p class="overall-record" th:text="${team.wins + '-' + team.losses}"></p>
                     <P class="win-pct" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></P>
                     <p class="rpi-rank" th:text="${team.rpiRank}"></p>
+                    <p class="sos-rank" th:text="*{strengthOfScheduleRank}"></p>
                     <p th:text="*{quadOneWins + '-' + quadOneLosses}"></p>
                     <p th:text="*{quadTwoWins + '-' + quadTwoLosses}"></p>
                     <p th:text="*{quadThreeWins + '-' + quadThreeLosses}"></p>

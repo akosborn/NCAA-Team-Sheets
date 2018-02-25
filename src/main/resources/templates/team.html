@@ -15,6 +15,7 @@
             <h1 id="team-title" th:text="${team.name}"></h1>
             <p id="overall-record" th:text="${'(' + team.wins + '-' + team.losses + ')'}"></p>
             <p id="rpi-rank" th:text="${'RPI: ' + team.rpiRank}"></p>
+            <p id="sos-rank" th:text="${'SOS: ' + team.strengthOfScheduleRank}"></p>
             <form th:action="@{/compare}">
                 <div class="row">
                     <div class="col col-md-3">
