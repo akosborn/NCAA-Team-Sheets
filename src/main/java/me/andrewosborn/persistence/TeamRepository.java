@@ -18,4 +18,6 @@ public interface TeamRepository extends JpaRepository<Team, Long>
     List<Team> findAllByOrderByNameAsc();
 
     List<Team> findAllByOrderByStrengthOfScheduleDesc();
+
+    List<Team> findTop10ByOrderByQuadOneWinsDesc();
 }
