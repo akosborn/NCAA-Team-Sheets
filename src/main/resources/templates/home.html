@@ -12,7 +12,7 @@
     <div layout:fragment="content">
         <div class="row">
             <div id="d3-div" class="col-12">
-                <div class="col-md-4">
+                <div id="quad-one-wins-div" class="col-md-4">
 
                 </div>
                 <div class="col-md-4">
@@ -43,26 +43,374 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <th:block th:each="team, iterStat : ${teams}" th:object="${team}">
-                        <tr>
-                            <td class="rpi-rank-col" th:text="${team.rpiRank}"></td>
-                            <td class="team-col"><a th:href="@{|/team/${team.urlName}|}" th:text="*{name}"></a></td>
-                            <td class="conference-col" th:text="*{conference.name}"></td>
-                            <td class="sos-col" th:text="*{strengthOfScheduleRank}"></td>
-                            <td class="wins-col" th:text="*{wins}"></td>
-                            <td class="losses-col" th:text="*{losses}"></td>
-                            <td class="win-pct-col" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></td>
-                            <td class="quadrant-col" th:text="*{quadOneWins + '-' + quadOneLosses}"></td>
-                            <td class="quadrant-col" th:text="*{quadTwoWins + '-' + quadTwoLosses}"></td>
-                            <td class="quadrant-col" th:text="*{quadThreeWins + '-' + quadThreeLosses}"></td>
-                            <td class="quadrant-col" th:text="*{quadFourWins + '-' + quadFourLosses}"></td>
-                            <td class="rpi-col" th:text="*{#numbers.formatDecimal(rpi, 1, 6)}"></td>
-                        </tr>
-                    </th:block>
+                        <th:block th:each="team, iterStat : ${teams}" th:object="${team}">
+                            <tr>
+                                <td class="rpi-rank-col" th:text="${team.rpiRank}"></td>
+                                <td class="team-col"><a th:href="@{|/team/${team.urlName}|}" th:text="*{name}"></a></td>
+                                <td class="conference-col" th:text="*{conference.name}"></td>
+                                <td class="sos-col" th:text="*{strengthOfScheduleRank}"></td>
+                                <td class="wins-col" th:text="*{wins}"></td>
+                                <td class="losses-col" th:text="*{losses}"></td>
+                                <td class="win-pct-col" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></td>
+                                <td class="quadrant-col" th:text="*{quadOneWins + '-' + quadOneLosses}"></td>
+                                <td class="quadrant-col" th:text="*{quadTwoWins + '-' + quadTwoLosses}"></td>
+                                <td class="quadrant-col" th:text="*{quadThreeWins + '-' + quadThreeLosses}"></td>
+                                <td class="quadrant-col" th:text="*{quadFourWins + '-' + quadFourLosses}"></td>
+                                <td class="rpi-col" th:text="*{#numbers.formatDecimal(rpi, 1, 6)}"></td>
+                            </tr>
+                        </th:block>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <script th:inline="javascript">
+
+        var sosGraph = new QuadrantOneGraph();
+
+        var roundToTwoPlaces = d3.format(".2f");
+        var dateFormat = d3.timeFormat("%b %e, %y");
+
+        window.onload = function ()
+        {
+            sosGraph.create();
+        };
+
+        d3.select(window).on("resize", resize);
+
+        function resize()
+        {
+            sosGraph.resize();
+        }
+
+        function QuadrantOneGraph()
+        {
+            var teams,
+                teamsSize,
+                maxWins,
+                minWins,
+                width,
+                height,
+                barWidth,
+                yScale,
+                yAxis,
+                graph,
+                toolTip,
+                bars,
+                labels;
+
+            this.create = function ()
+            {
+                teams = [[${topTenQuadOneTeams}]];
+                teamsSize = teams.length;
+                maxWins = d3.max(teams, function (d) { return d.quadOneWins; });
+                minWins = d3.min(teams, function (d) { return d.quadOneWins; });
+
+                width = parseInt(d3.select("#quad-one-wins-div").style("width"));
+                height = parseInt(d3.select("#quad-one-wins-div").style("height"));
+
+                barWidth = (width / 2) / teamsSize;
+
+                yScale = d3.scaleLinear()
+                    .domain([minWins * 0.90, maxWins])
+                    .range([0, height]);
+
+                yAxis = d3.axisLeft(yScale);
+
+                graph = d3.select("#quad-one-wins-div")
+                    .append("svg")
+                    .attr("id", "quad-one-wins-graph")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                toolTip = d3.tip()
+                    .attr("class", 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function (d) {
+                        var text = "<p>" + d.name + "</p><p>" + d.quadOneWins + "</p>";
+
+                        return text;
+                    });
+
+                function mySqlToJsDate(d)
+                {
+                    var dateParts = d.date.split("-");
+                    return dateFormat(new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0, 2)));
+                }
+
+                graph.call(toolTip);
+
+                bars = graph.selectAll("rect")
+                    .data(topTenShows)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("width", barWidth)
+                    .attr("height", 0)
+//                    .attr("fill", function (d) {
+//                        var color = "orangered";
+//                        var averageRating = d.quadOneWins;
+//
+//                        if (averageRating >= 9)
+//                            color = "#B9F2FF";
+//                        if (averageRating >= 8 && averageRating < 9)
+//                            color = "#FFD700";
+//                        if (averageRating >= 7 && averageRating < 8)
+//                            color = "#C0C0C0";
+//                        if (averageRating >= 6 && averageRating < 7)
+//                            color = "#CD7F32";
+//
+//                        return color;
+//                    })
+                    .attr("y", height)
+                    .attr("x", function (d, i) {
+                        return (2 * barWidth * i)
+                    })
+                    .on("mouseover", toolTip.show)
+                    .on("mouseout", toolTip.hide)
+                    .on("click", function (d) {
+                        var url = window.location + "team/" + d.urlName;
+                        window.location = url;
+                    });
+
+                bars
+                    .data(teams)
+                    .transition()
+                    .delay(function (d, i) {
+                        return (i * 50)
+                    })
+                    .duration(1000)
+                    .attr("y", function (d) {
+                        return height - (yScale(d.quadOneWins))
+                    })
+                    .attr("height", function (d) {
+                        return yScale(d.quadOneWins)
+                    });
+
+                labels = graph.selectAll("text")
+                    .data(teams)
+                    .enter()
+                    .append("text")
+                    .classed("bar-label", true)
+                    .text(function (d) {
+                        return roundToTwoPlaces(d.quadOneWins)
+                    })
+                    .attr("fill", "black")
+                    .style("font-size", "0px")
+                    .attr("y", height)
+                    .attr("x", function (d, i) {
+                        return (2 * barWidth * i) + 5;
+                    });
+
+                labels
+                    .data(teams)
+                    .transition()
+                    .delay(function (d, i) {
+                        return (i * 50)
+                    })
+                    .duration(1000)
+                    .style("font-size", "11px")
+                    .attr("y", function (d) {
+                        return height - (yScale(d.quadOneWins) - 10)
+                    })
+                    .attr("x", function (d, i) {
+                        return (2 * barWidth * i) + 5;
+                    });
+            };
+
+            this.resize = function ()
+            {
+                // Find new dimensions
+                width = parseInt(d3.select("#quad-one-wins-div").style("width"));
+                height = parseInt(d3.select("#quad-one-wins-div").style("height"));
+
+                barWidth = (width / 2) / teamsSize;
+
+                graph
+                    .attr("width", width);
+
+                yScale = d3.scaleLinear()
+                    .domain([minWins * 0.90, maxWins])
+                    .range([0, height]);
+
+                yAxis.scale(yScale);
+
+                bars
+                    .data(teams)
+                    .attr("width", barWidth)
+                    .attr("x", function (d, i) {
+                        return (2 * barWidth * i)
+                    })
+                    .attr("height", function (d) {
+                        return yScale(d.quadOneWins)
+                    });
+
+                labels
+                    .data(teams)
+                    .attr("y", function (d) {
+                        return height - (yScale(d.quadOneWins) - 10)
+                    })
+                    .attr("x", function (d, i) {
+                        return (2 * barWidth * i) + 5;
+                    });
+            }
+        }
+
+        function SongGraph()
+        {
+            var topTenSongs,
+                topTenSongsSize,
+                maxRating,
+                minRating,
+                width,
+                height,
+                barWidth,
+                yScale,
+                yAxis,
+                graph,
+                toolTip,
+                bars,
+                labels;
+
+            this.create = function createSongGraph()
+            {
+                topTenSongs = [[${topTenSongs}]];
+                topTenSongsSize = topTenSongs.length;
+                maxRating = d3.max(topTenSongs, function (d) { return d.averageRating; });
+                minRating = d3.min(topTenSongs, function (d) { return d.averageRating; });
+
+                width = parseInt(d3.select("#top_song_chart_div").style("width"));
+                height = parseInt(d3.select("#top_song_chart_div").style("height"));
+
+                barWidth = (width / 2) / topTenSongsSize;
+
+                yScale = d3.scaleLinear()
+                    .domain([minRating * 0.90, maxRating])
+                    .range([0, height]);
+
+                yAxis = d3.axisLeft(yScale);
+
+                graph = d3.select("#top_song_chart_div")
+                    .append("svg")
+                    .attr("id", "top-song-graph")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                toolTip = d3.tip()
+                    .attr("class", 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function (d)
+                    {
+                        var text = "<p>" + roundToTwoPlaces(d.averageRating) + "</p><p>" + d.song + "</p><p style='color:#0080FF'>" + mySqlToJsDate(d) + " <span style='color: white'>" + d.show.city + ", " + d.show.state
+                            + "</span></p><p>" + d.show.venue + "</p>";
+
+                        return text;
+                    });
+
+                function mySqlToJsDate(d)
+                {
+                    var dateParts = d.show.date.split("-");
+
+                    return dateFormat(new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0, 2)));
+                }
+
+                graph.call(toolTip);
+
+                bars = graph.selectAll("rect")
+                    .data(topTenSongs)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("width", barWidth)
+                    .attr("height", 0)
+                    .attr("fill", function (d) {
+                        var color = "orangered";
+                        var averageRating = d.averageRating;
+
+                        if (averageRating >= 9)
+                            color = "#B9F2FF";
+                        if (averageRating >= 8 && averageRating < 9 )
+                            color = "#FFD700";
+                        if (averageRating >= 7 && averageRating < 8)
+                            color = "#C0C0C0";
+                        if (averageRating >= 6 && averageRating < 7)
+                            color = "#CD7F32";
+
+                        return color;
+                    })
+                    .attr("y", height)
+                    .attr("x", function (d, i) { return (2 * barWidth * i) })
+                    .on("mouseover", toolTip.show)
+                    .on("mouseout", toolTip.hide)
+                    .on("click", function (d) {
+                        var url = window.location + "shows/" + d.show.id + "/" + d.show.slug;
+                        window.location = url;
+                    });
+
+                bars
+                    .data(topTenSongs)
+                    .transition()
+                    .delay(function (d, i) { return (i * 50) })
+                    .duration(1000)
+                    .attr("y", function (d) { return height - (yScale(d.averageRating)) })
+                    .attr("height", function (d) { return yScale(d.averageRating) });
+
+                labels = graph.selectAll("text")
+                    .data(topTenSongs)
+                    .enter()
+                    .append("text")
+                    .classed("bar-label", true)
+                    .text(function (d) { return roundToTwoPlaces(d.averageRating) })
+                    .attr("fill", "black")
+                    .style("font-size", "0px")
+                    .attr("y", height)
+                    .attr("x", function (d, i) { return (2 * barWidth * i) + 5 });
+
+                labels
+                    .data(topTenSongs)
+                    .transition()
+                    .delay(function (d, i) { return (i * 50) })
+                    .duration(1000)
+                    .style("font-size", "11px")
+                    .attr("y", function (d) { return height - (yScale(d.averageRating) - 10) })
+                    .attr("x", function (d, i) { return (2 * barWidth * i) + 5});
+            };
+
+            this.resize = function ()
+            {
+                console.log("resizeSongs() called");
+
+                // Find new dimensions
+                width = parseInt(d3.select("#top_song_chart_div").style("width"));
+                height = parseInt(d3.select("#top_song_chart_div").style("height"));
+
+                console.log('New song chart div: ' + width + 'x' + height);
+
+                barWidth = (width / 2) / topTenSongsSize;
+
+                graph
+                    .attr("width", width);
+
+                yScale = d3.scaleLinear()
+                    .domain([minRating * 0.90, maxRating])
+                    .range([0, height]);
+
+                yAxis.scale(yScale);
+
+                bars
+                    .data(topTenSongs)
+                    .attr("width", barWidth)
+                    .attr("x", function (d, i) { return (2 * barWidth * i) })
+                    .attr("height", function (d) { return yScale(d.averageRating) });
+
+                labels
+                    .data(topTenSongs)
+                    .attr("y", function (d) { return height - (yScale(d.averageRating) - 10) })
+                    .attr("x", function (d, i) { return (2 * barWidth * i) + 5 });
+            }
+        }
+
+    </script>
 </body>
 </html>
