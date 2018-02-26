@@ -81,6 +81,10 @@ public class Team
 
     private float winPct;
 
+    private float strengthOfSchedule;
+
+    private int strengthOfScheduleRank;
+
     @Transient
     private TeamGame bestWin;
 
@@ -412,5 +416,25 @@ public class Team
     public void setWorstLoss(TeamGame worstLoss)
     {
         this.worstLoss = worstLoss;
+    }
+
+    public float getStrengthOfSchedule()
+    {
+        return strengthOfSchedule;
+    }
+
+    public void setStrengthOfSchedule(float strengthOfSchedule)
+    {
+        this.strengthOfSchedule = strengthOfSchedule;
+    }
+
+    public int getStrengthOfScheduleRank()
+    {
+        return strengthOfScheduleRank;
+    }
+
+    public void setStrengthOfScheduleRank(int strengthOfScheduleRank)
+    {
+        this.strengthOfScheduleRank = strengthOfScheduleRank;
     }
 }

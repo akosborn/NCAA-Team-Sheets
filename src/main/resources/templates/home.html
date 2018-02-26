@@ -18,6 +18,7 @@
                     <th class="rpi-rank-header" scope="col">RPI Rank</th>
                     <th scope="col">Team</th>
                     <th class="conference-header" scope="col">Conference</th>
+                    <th class="sos-header">SOS</th>
                     <th class="wins-header" scope="col">W</th>
                     <th class="losses-header" scope="col">L</th>
                     <th class="win-pct-header" scope="col">Win %</th>
@@ -34,6 +35,7 @@
                         <td class="rpi-rank-col" th:text="${team.rpiRank}"></td>
                         <td class="team-col"><a th:href="@{|/team/${team.urlName}|}" th:text="*{name}"></a></td>
                         <td class="conference-col" th:text="*{conference.name}"></td>
+                        <td class="sos-col" th:text="*{strengthOfScheduleRank}"></td>
                         <td class="wins-col" th:text="*{wins}"></td>
                         <td class="losses-col" th:text="*{losses}"></td>
                         <td class="win-pct-col" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></td>

@@ -3,7 +3,7 @@
 }
 
 .rpi-header, .rpi-rank-header, .rpi-rank-col, .site-col, .wins-header, .losses-header,
-.rpi-col, .wins-col, .losses-col, .quadrant-col, .quadrant-header, .win-pct-header, .win-pct-col {
+.rpi-col, .wins-col, .losses-col, .quadrant-col, .quadrant-header, .win-pct-header, .win-pct-col, .sos-col, .sos-header {
     text-align: center;
 }
 

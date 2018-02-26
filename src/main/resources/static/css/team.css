@@ -6,10 +6,7 @@
     display: inline;
 }
 
-#rpi-rank {
-    display: inline;
-
-}#overall-record {
+#rpi-rank, #overall-record, #sos-rank {
     display: inline;
 }
 
