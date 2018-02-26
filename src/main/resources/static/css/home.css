@@ -1,3 +1,7 @@
+#d3-div {
+    height: 250px;
+}
+
 .rpi-table > tbody > tr > td, .rpi-table > thead > tr > th {
     padding: 1px;
 }
