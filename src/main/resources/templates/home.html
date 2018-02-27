@@ -57,12 +57,10 @@
                 </table>
             </div>
         </div>
+
         <script th:inline="javascript">
 
             var quadOneGraph = new QuadrantOneGraph();
-
-            var roundToTwoPlaces = d3.format(".2f");
-            var dateFormat = d3.timeFormat("%b %e, %y");
 
             window.onload = function ()
             {
@@ -84,14 +82,14 @@
                     minWins,
                     width,
                     height,
+                    margin = {top: 20, right: 20, bottom: 30, left: 40},
                     barWidth,
+                    xScale,
                     yScale,
                     yAxis,
                     graph,
-                    toolTip,
                     bars,
-                    numberLabels,
-                    teamLabels;
+                    numberLabels;
 
                 this.create = function ()
                 {
@@ -100,117 +98,94 @@
                     maxWins = d3.max(teams, function (d) { return d.quadOneWins; });
                     minWins = d3.min(teams, function (d) { return d.quadOneWins; });
 
-                    width = parseInt(d3.select("#quad-one-wins-div").style("width"));
-                    height = parseInt(d3.select("#quad-one-wins-div").style("height"));
+                    var graphWidth = parseInt(d3.select("#quad-one-wins-div").style("width"));
+                    var graphHeight = parseInt(d3.select("#quad-one-wins-div").style("height"));
 
-                    barWidth = (width / 2) / teamsSize;
+                    width = graphWidth - margin.left - margin.right;
+                    height = graphHeight - margin.top - margin.bottom;
 
+                    xScale = d3.scaleBand()
+                        .domain(teams.map(function (d) { return d.name; }))
+                        .rangeRound([0, width]).padding(0.1);
                     yScale = d3.scaleLinear()
-                        .domain([minWins * 0.90, maxWins])
-                        .range([0, height]);
-
-                    yAxis = d3.axisLeft(yScale);
+                        .domain([0, maxWins])
+                        .rangeRound([height, 0]);
 
                     graph = d3.select("#quad-one-wins-div")
                         .append("svg")
                         .attr("id", "quad-one-wins-graph")
-                        .attr("width", width)
-                        .attr("height", height);
+                        .attr("width", graphWidth)
+                        .attr("height", graphHeight);
 
-//                    toolTip = d3.tip()
-//                        .attr("class", 'd3-tip')
-//                        .offset([-10, 0])
-//                        .html(function (d) {
-//                            var text = "<p>" + d.name + "</p><p>" + d.quadOneWins + "</p>";
-//
-//                            return text;
-//                        });
+                    var g = graph.append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                    function mySqlToJsDate(d)
-                    {
-                        var dateParts = d.date.split("-");
-                        return dateFormat(new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0, 2)));
-                    }
+                    // create x-axis
+                    g.append("g")
+                        .attr("class", "axis axis--x")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(xScale));
 
-//                    graph.call(toolTip);
+                    // create y-axis
+                    yAxis = g.append("g")
+                        .attr("class", "axis axis--y")
+                        .call(d3.axisLeft(yScale).ticks(10))
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", "0.71em")
+                        .attr("text-anchor", "end")
+                        .text("Wins");
 
-                    bars = graph.selectAll("rect")
+                    // create bars
+                    bars = g.selectAll("rect")
                         .data(teams)
                         .enter()
                         .append("rect")
-                        .attr("class", "bar")
-                        .attr("width", barWidth)
-                        .attr("height", 0)
-                        .attr("fill", "#33338A")
-                        .attr("y", height)
-                        .attr("x", function (d, i) {
-                            return (2 * barWidth * i)
+                        .attr("class", "quad-one-bar")
+                        .attr("x", function (d) {
+                            return xScale(d.name);
                         })
-//                        .on("mouseover", toolTip.show)
-//                        .on("mouseout", toolTip.hide)
-                        .on("click", function (d) {
-                            var url = window.location + "team/" + d.urlName;
-                            window.location = url;
-                        });
-
-                    bars
-                        .data(teams)
-                        .transition()
-                        .delay(function (d, i) {
-                            return (i * 50)
-                        })
-                        .duration(1000)
                         .attr("y", function (d) {
-                            return height - (yScale(d.quadOneWins))
+                            return yScale(d.quadOneWins);
                         })
+                        .attr("width", xScale.bandwidth())
                         .attr("height", function (d) {
-                            return yScale(d.quadOneWins)
+                            return height - yScale(d.quadOneWins);
                         });
 
-                    numberLabels = graph.selectAll("text")
-                        .data(teams)
-                        .enter()
-                        .append("text")
-                        .classed("bar-label", true)
-                        .text(function (d) {
-                            return d.quadOneWins
-                        })
-                        .attr("fill", "white")
-                        .style("font-size", "0px")
-                        .attr("y", height)
-                        .attr("x", function (d, i) {
-                            return (2 * barWidth * i) + 7;
-                        });
-
-                    numberLabels
-                        .data(teams)
-                        .transition()
-                        .delay(function (d, i) {
-                            return (i * 50)
-                        })
-                        .duration(1000)
-                        .style("font-size", "11px")
-                        .attr("y", function (d) {
-                            return height - (yScale(d.quadOneWins) - 10)
-                        })
-                        .attr("x", function (d, i) {
-                            return (2 * barWidth * i) + 5;
-                        });
-
-                    teamLabels = graph.selectAll("text")
-                        .data(teams)
-                        .enter()
-                        .append("text")
-                        .classed("team-label", true)
-                        .text(function (d) {
-                            return d.name
-                        })
-                        .attr("fill", "red")
-                        .style("font-size", "11px")
-                        .attr("y", 5)
-                        .attr("x", function (d, i) {
-                            return (2 * barWidth * i);
-                        });
+//                    g.append("text")
+//                        .attr("y", height - 4)
+//                        .text(function (d) {
+//                           return d.quadOneWins;
+//                        });
+//
+//                    bars = graph.selectAll("rect")
+//                        .data(teams)
+//                        .enter()
+//                        .append("rect")
+//                        .attr("class", "bar")
+//                        .attr("width", barWidth)
+//                        .attr("height", 0)
+//                        .attr("fill", "#33338A")
+//                        .attr("y", height)
+//                        .attr("x", function (d, i) {
+//                            return (2 * barWidth * i)
+//                        });
+//
+//                    bars
+//                        .data(teams)
+//                        .transition()
+//                        .delay(function (d, i) {
+//                            return (i * 50)
+//                        })
+//                        .duration(1000)
+//                        .attr("y", function (d) {
+//                            return height - (yScale(d.quadOneWins))
+//                        })
+//                        .attr("height", function (d) {
+//                            return yScale(d.quadOneWins)
+//                        });
                 };
 
                 this.resize = function ()
@@ -248,160 +223,6 @@
                         .attr("x", function (d, i) {
                             return (2 * barWidth * i) + 5;
                         });
-                }
-            }
-
-            function SongGraph()
-            {
-                var topTenSongs,
-                    topTenSongsSize,
-                    maxRating,
-                    minRating,
-                    width,
-                    height,
-                    barWidth,
-                    yScale,
-                    yAxis,
-                    graph,
-                    toolTip,
-                    bars,
-                    labels;
-
-                this.create = function createSongGraph()
-                {
-                    topTenSongs = [[${topTenSongs}]];
-                    topTenSongsSize = topTenSongs.length;
-                    maxRating = d3.max(topTenSongs, function (d) { return d.averageRating; });
-                    minRating = d3.min(topTenSongs, function (d) { return d.averageRating; });
-
-                    width = parseInt(d3.select("#top_song_chart_div").style("width"));
-                    height = parseInt(d3.select("#top_song_chart_div").style("height"));
-
-                    barWidth = (width / 2) / topTenSongsSize;
-
-                    yScale = d3.scaleLinear()
-                        .domain([minRating * 0.90, maxRating])
-                        .range([0, height]);
-
-                    yAxis = d3.axisLeft(yScale);
-
-                    graph = d3.select("#top_song_chart_div")
-                        .append("svg")
-                        .attr("id", "top-song-graph")
-                        .attr("width", width)
-                        .attr("height", height);
-
-//                    toolTip = d3.tip()
-//                        .attr("class", 'd3-tip')
-//                        .offset([-10, 0])
-//                        .html(function (d)
-//                        {
-//                            var text = "<p>" + roundToTwoPlaces(d.averageRating) + "</p><p>" + d.song + "</p><p style='color:#0080FF'>" + mySqlToJsDate(d) + " <span style='color: white'>" + d.show.city + ", " + d.show.state
-//                                + "</span></p><p>" + d.show.venue + "</p>";
-//
-//                            return text;
-//                        });
-
-                    function mySqlToJsDate(d)
-                    {
-                        var dateParts = d.show.date.split("-");
-
-                        return dateFormat(new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0, 2)));
-                    }
-
-//                    graph.call(toolTip);
-
-                    bars = graph.selectAll("rect")
-                        .data(topTenSongs)
-                        .enter()
-                        .append("rect")
-                        .attr("class", "bar")
-                        .attr("width", barWidth)
-                        .attr("height", 0)
-                        .attr("fill", function (d) {
-                            var color = "orangered";
-                            var averageRating = d.averageRating;
-
-                            if (averageRating >= 9)
-                                color = "#B9F2FF";
-                            if (averageRating >= 8 && averageRating < 9 )
-                                color = "#FFD700";
-                            if (averageRating >= 7 && averageRating < 8)
-                                color = "#C0C0C0";
-                            if (averageRating >= 6 && averageRating < 7)
-                                color = "#CD7F32";
-
-                            return color;
-                        })
-                        .attr("y", height)
-                        .attr("x", function (d, i) { return (2 * barWidth * i) })
-                        .on("mouseover", toolTip.show)
-                        .on("mouseout", toolTip.hide)
-                        .on("click", function (d) {
-                            var url = window.location + "shows/" + d.show.id + "/" + d.show.slug;
-                            window.location = url;
-                        });
-
-                    bars
-                        .data(topTenSongs)
-                        .transition()
-                        .delay(function (d, i) { return (i * 50) })
-                        .duration(1000)
-                        .attr("y", function (d) { return height - (yScale(d.averageRating)) })
-                        .attr("height", function (d) { return yScale(d.averageRating) });
-
-                    labels = graph.selectAll("text")
-                        .data(topTenSongs)
-                        .enter()
-                        .append("text")
-                        .classed("bar-label", true)
-                        .text(function (d) { return roundToTwoPlaces(d.averageRating) })
-                        .attr("fill", "black")
-                        .style("font-size", "0px")
-                        .attr("y", height)
-                        .attr("x", function (d, i) { return (2 * barWidth * i) + 5 });
-
-                    labels
-                        .data(topTenSongs)
-                        .transition()
-                        .delay(function (d, i) { return (i * 50) })
-                        .duration(1000)
-                        .style("font-size", "11px")
-                        .attr("y", function (d) { return height - (yScale(d.averageRating) - 10) })
-                        .attr("x", function (d, i) { return (2 * barWidth * i) + 5});
-                };
-
-                this.resize = function ()
-                {
-                    console.log("resizeSongs() called");
-
-                    // Find new dimensions
-                    width = parseInt(d3.select("#top_song_chart_div").style("width"));
-                    height = parseInt(d3.select("#top_song_chart_div").style("height"));
-
-                    console.log('New song chart div: ' + width + 'x' + height);
-
-                    barWidth = (width / 2) / topTenSongsSize;
-
-                    graph
-                        .attr("width", width);
-
-                    yScale = d3.scaleLinear()
-                        .domain([minRating * 0.90, maxRating])
-                        .range([0, height]);
-
-                    yAxis.scale(yScale);
-
-                    bars
-                        .data(topTenSongs)
-                        .attr("width", barWidth)
-                        .attr("x", function (d, i) { return (2 * barWidth * i) })
-                        .attr("height", function (d) { return yScale(d.averageRating) });
-
-                    labels
-                        .data(topTenSongs)
-                        .attr("y", function (d) { return height - (yScale(d.averageRating) - 10) })
-                        .attr("x", function (d, i) { return (2 * barWidth * i) + 5 });
                 }
             }
 

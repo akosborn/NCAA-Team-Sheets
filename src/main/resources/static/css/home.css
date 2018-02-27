@@ -23,3 +23,19 @@
     width: 5ch;
     min-width: 5ch;
 }
+
+.quad-one-bar {
+     fill: steelblue;
+}
+
+.quad-one-bar:hover {
+    fill: brown;
+}
+
+.axis--x path {
+    display: none;
+}
+
+#quad-one-wins-div {
+    padding: 0;
+}
