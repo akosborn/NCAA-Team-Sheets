@@ -1,5 +1,7 @@
 package me.andrewosborn.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -26,6 +28,7 @@ public class TeamGame
     private Date date;
 
     @ManyToOne
+    @JsonIgnoreProperties("games")
     private Team opponent;
 
     private int oneScore;

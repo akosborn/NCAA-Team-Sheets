@@ -1,3 +1,7 @@
+#quad-one-wins-div, #quad-two-wins-div {
+    height: 250px;
+}
+
 .rpi-table > tbody > tr > td, .rpi-table > thead > tr > th {
     padding: 1px;
 }
@@ -18,4 +22,24 @@
 .quadrant-col, .wins-col, .losses-col {
     width: 5ch;
     min-width: 5ch;
+}
+
+.quad-one-bar, .quad-two-bar {
+     fill: steelblue;
+}
+
+.quad-one-bar:hover {
+    fill: brown;
+}
+
+.axis--x path {
+    display: none;
+}
+
+#quad-one-wins-div, #quad-two-wins-div {
+    padding: 0;
+}
+
+.graph-title {
+    text-align: center;
 }

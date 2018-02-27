@@ -56,4 +56,14 @@ public class TeamService
     {
         return teamRepository.findAllByOrderByStrengthOfScheduleDesc();
     }
+
+    public List<Team> getTopTenOrderByQuadOneWinsDesc()
+    {
+        return teamRepository.findTop10ByOrderByQuadOneWinsDesc();
+    }
+
+    public List<Team> getTopTenOrderByQuadOneWinsPlusQuadTwoWinsDesc()
+    {
+        return teamRepository.findTop10ByQuadOneWinsPlusQuadTwoWinsDesc();
+    }
 }

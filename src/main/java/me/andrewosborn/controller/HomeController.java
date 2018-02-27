@@ -21,6 +21,8 @@ public class HomeController
     public String home(Model model)
     {
         model.addAttribute("teams", teamService.getAllOrderByRpiDesc());
+        model.addAttribute("topTenQuadOneTeams", teamService.getTopTenOrderByQuadOneWinsDesc());
+        model.addAttribute("topTenQuadOnePlusTwoTeams", teamService.getTopTenOrderByQuadOneWinsPlusQuadTwoWinsDesc());
 
         return "home";
     }
