@@ -24,7 +24,7 @@
     min-width: 5ch;
 }
 
-.quad-one-bar {
+.quad-one-bar, .quad-two-bar {
      fill: steelblue;
 }
 
@@ -36,6 +36,10 @@
     display: none;
 }
 
-#quad-one-wins-div {
+#quad-one-wins-div, #quad-two-wins-div {
     padding: 0;
+}
+
+.graph-title {
+    text-align: center;
 }

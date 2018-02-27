@@ -61,4 +61,9 @@ public class TeamService
     {
         return teamRepository.findTop10ByOrderByQuadOneWinsDesc();
     }
+
+    public List<Team> getTopTenOrderByQuadOneWinsPlusQuadTwoWinsDesc()
+    {
+        return teamRepository.findTop10ByQuadOneWinsPlusQuadTwoWinsDesc();
+    }
 }

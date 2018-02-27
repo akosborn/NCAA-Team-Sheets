@@ -12,9 +12,13 @@
 <body>
     <div layout:fragment="content">
         <div id="d3-row" class="row">
-            <div id="quad-one-wins-div" class="col-md-6">
+            <div class="col-md-6">
+                <h4 class="graph-title">Q1 Wins</h4>
+                <div id="quad-one-wins-div"></div>
             </div>
-            <div id="quad-two-wins-div" class="col-md-6">
+            <div class="col-md-6">
+                <h4 class="graph-title">Q1 + Q2 Wins</h4>
+                <div id="quad-two-wins-div"></div>
             </div>
         </div>
         <div class="row">
@@ -60,11 +64,21 @@
 
         <script th:inline="javascript">
 
-            var quadOneGraph = new QuadrantOneGraph();
+            var quadOneTeams = [[${topTenQuadOneTeams}]];
+            var quadOnePlusTwoTeams = [[${topTenQuadOnePlusTwoTeams}]];
+
+            if (parseInt(d3.select("#quad-one-wins-div").style("width")) < 470) {
+                quadOneTeams = quadOneTeams.slice(0, 5);
+                quadOnePlusTwoTeams = quadOnePlusTwoTeams.slice(0, 5);
+            }
+
+            var quadOneGraph = new QuadOneGraph(quadOneTeams, "#quad-one-wins-div");
+            var quadTwoGraph = new QuadTwoGraph(quadOnePlusTwoTeams, "#quad-two-wins-div");
 
             window.onload = function ()
             {
                 quadOneGraph.create();
+                quadTwoGraph.create();
             };
 
             d3.select(window).on("resize", resize);
@@ -74,10 +88,8 @@
                 quadOneGraph.resize();
             }
 
-            function QuadrantOneGraph()
-            {
-                var teams,
-                    teamsSize,
+            function QuadOneGraph(teams, divId) {
+                var teamsSize,
                     maxWins,
                     minWins,
                     width,
@@ -91,27 +103,31 @@
                     bars,
                     numberLabels;
 
-                this.create = function ()
-                {
-                    teams = [[${topTenQuadOneTeams}]];
+                this.create = function () {
                     teamsSize = teams.length;
-                    maxWins = d3.max(teams, function (d) { return d.quadOneWins; });
-                    minWins = d3.min(teams, function (d) { return d.quadOneWins; });
+                    maxWins = d3.max(teams, function (d) {
+                        return d.quadOneWins;
+                    });
+                    minWins = d3.min(teams, function (d) {
+                        return d.quadOneWins;
+                    });
 
-                    var graphWidth = parseInt(d3.select("#quad-one-wins-div").style("width"));
-                    var graphHeight = parseInt(d3.select("#quad-one-wins-div").style("height"));
+                    var graphWidth = parseInt(d3.select(divId).style("width"));
+                    var graphHeight = parseInt(d3.select(divId).style("height"));
 
                     width = graphWidth - margin.left - margin.right;
                     height = graphHeight - margin.top - margin.bottom;
 
                     xScale = d3.scaleBand()
-                        .domain(teams.map(function (d) { return d.name; }))
+                        .domain(teams.map(function (d) {
+                            return d.name;
+                        }))
                         .rangeRound([0, width]).padding(0.1);
                     yScale = d3.scaleLinear()
                         .domain([0, maxWins])
                         .rangeRound([height, 0]);
 
-                    graph = d3.select("#quad-one-wins-div")
+                    graph = d3.select(divId)
                         .append("svg")
                         .attr("id", "quad-one-wins-graph")
                         .attr("width", graphWidth)
@@ -154,38 +170,127 @@
                             return height - yScale(d.quadOneWins);
                         });
 
-//                    g.append("text")
-//                        .attr("y", height - 4)
-//                        .text(function (d) {
-//                           return d.quadOneWins;
-//                        });
-//
-//                    bars = graph.selectAll("rect")
-//                        .data(teams)
-//                        .enter()
-//                        .append("rect")
-//                        .attr("class", "bar")
-//                        .attr("width", barWidth)
-//                        .attr("height", 0)
-//                        .attr("fill", "#33338A")
-//                        .attr("y", height)
-//                        .attr("x", function (d, i) {
-//                            return (2 * barWidth * i)
-//                        });
-//
-//                    bars
-//                        .data(teams)
-//                        .transition()
-//                        .delay(function (d, i) {
-//                            return (i * 50)
-//                        })
-//                        .duration(1000)
-//                        .attr("y", function (d) {
-//                            return height - (yScale(d.quadOneWins))
-//                        })
-//                        .attr("height", function (d) {
-//                            return yScale(d.quadOneWins)
-//                        });
+                    graph.selectAll(".axis")
+                        .style("font-size", "8px");
+
+                    this.resize = function () {
+                        // Find new dimensions
+                        width = parseInt(d3.select(divId).style("width"));
+                        height = parseInt(d3.select(divId).style("height"));
+
+                        barWidth = (width / 2) / teamsSize;
+
+                        graph
+                            .attr("width", width);
+
+                        yScale = d3.scaleLinear()
+                            .domain([minWins * 0.90, maxWins])
+                            .range([0, height]);
+
+                        yAxis.scale(yScale);
+
+                        bars
+                            .data(teams)
+                            .attr("width", barWidth)
+                            .attr("x", function (d, i) {
+                                return (2 * barWidth * i)
+                            })
+                            .attr("height", function (d) {
+                                return yScale(d.quadOneWins)
+                            });
+
+                        numberLabels
+                            .data(teams)
+                            .attr("y", function (d) {
+                                return height - (yScale(d.quadOneWins) - 10)
+                            })
+                            .attr("x", function (d, i) {
+                                return (2 * barWidth * i) + 5;
+                            });
+                    }
+                };
+            }
+
+            function QuadTwoGraph(teams, divId)
+            {
+                var teamsSize,
+                    maxWins,
+                    minWins,
+                    width,
+                    height,
+                    margin = {top: 20, right: 20, bottom: 30, left: 40},
+                    barWidth,
+                    xScale,
+                    yScale,
+                    yAxis,
+                    graph,
+                    bars,
+                    numberLabels;
+
+                this.create = function ()
+                {
+                    teamsSize = teams.length;
+                    maxWins = d3.max(teams, function (d) { return d.quadOneWins + d.quadTwoWins; });
+                    minWins = d3.min(teams, function (d) { return d.quadOneWins + d.quadTwoWins; });
+
+                    var graphWidth = parseInt(d3.select(divId).style("width"));
+                    var graphHeight = parseInt(d3.select(divId).style("height"));
+
+                    width = graphWidth - margin.left - margin.right;
+                    height = graphHeight - margin.top - margin.bottom;
+
+                    xScale = d3.scaleBand()
+                        .domain(teams.map(function (d) { return d.name; }))
+                        .rangeRound([0, width]).padding(0.1);
+                    yScale = d3.scaleLinear()
+                        .domain([0, maxWins])
+                        .rangeRound([height, 0]);
+
+                    graph = d3.select(divId)
+                        .append("svg")
+                        .attr("id", "quad-two-wins-graph")
+                        .attr("width", graphWidth)
+                        .attr("height", graphHeight);
+
+                    var g = graph.append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                    // create x-axis
+                    g.append("g")
+                        .attr("class", "axis axis--x")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(xScale));
+
+                    // create y-axis
+                    yAxis = g.append("g")
+                        .attr("class", "axis axis--y")
+                        .call(d3.axisLeft(yScale).ticks(10))
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", "0.71em")
+                        .attr("text-anchor", "end")
+                        .text("Wins");
+
+                    // create bars
+                    bars = g.selectAll("rect")
+                        .data(teams)
+                        .enter()
+                        .append("rect")
+                        .attr("class", "quad-two-bar")
+                        .attr("x", function (d) {
+                            return xScale(d.name);
+                        })
+                        .attr("y", function (d) {
+                            return yScale(d.quadOneWins + d.quadTwoWins);
+                        })
+                        .attr("width", xScale.bandwidth())
+                        .attr("height", function (d) {
+                            return height - yScale(d.quadOneWins + d.quadTwoWins);
+                        });
+
+                    graph.selectAll(".axis")
+                        .style("font-size", "8px");
                 };
 
                 this.resize = function ()
