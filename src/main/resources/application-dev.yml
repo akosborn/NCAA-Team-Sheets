@@ -10,4 +10,4 @@ spring:
       ddl-auto: update
     show-sql: false
   thymeleaf:
-    cache: false
+    cache: true
