@@ -25,12 +25,6 @@ public class Team
     @JsonIgnoreProperties(value = "teams", allowSetters = true)
     private Conference conference;
 
-    @OneToMany(mappedBy = "homeTeam", cascade = {CascadeType.ALL})
-    private List<Game> homeGames;
-
-    @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.ALL})
-    private List<Game> awayGames;
-
     @Transient
     private Map<Integer, Set<Game>> homeQuadrantGames;
 
@@ -126,26 +120,6 @@ public class Team
     public void setUrlName(String urlName)
     {
         this.urlName = urlName;
-    }
-
-    public List<Game> getHomeGames()
-    {
-        return homeGames;
-    }
-
-    public void setHomeGames(List<Game> homeGames)
-    {
-        this.homeGames = homeGames;
-    }
-
-    public List<Game> getAwayGames()
-    {
-        return awayGames;
-    }
-
-    public void setAwayGames(List<Game> awayGames)
-    {
-        this.awayGames = awayGames;
     }
 
     public int getWins()

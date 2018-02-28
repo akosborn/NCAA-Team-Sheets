@@ -1,6 +1,5 @@
 package me.andrewosborn.util;
 
-import me.andrewosborn.model.Game;
 import me.andrewosborn.model.Result;
 import me.andrewosborn.model.Team;
 import me.andrewosborn.model.TeamGame;
@@ -84,18 +83,11 @@ public class RpiUtil
     private static float calculateAvgOppOppWinPct(Team team)
     {
         float oppOppWinPctSum = 0.0f;
-        int totalGames = team.getHomeGames().size() + team.getAwayGames().size();
+        int totalGames = team.getGames().size();
 
-        for (Game homeGame : team.getHomeGames())
+        for (TeamGame teamGame : team.getGames())
         {
-            Team opponent = homeGame.getAwayTeam();
-            oppOppWinPctSum += calculateOpponentsAvgWinPct(opponent);
-        }
-
-        for (Game awayGame : team.getAwayGames())
-        {
-            Team opponent = awayGame.getHomeTeam();
-            oppOppWinPctSum += calculateOpponentsAvgWinPct(opponent);
+            oppOppWinPctSum += calculateOpponentsAvgWinPct(teamGame.getOpponent());
         }
 
         return oppOppWinPctSum / totalGames;
