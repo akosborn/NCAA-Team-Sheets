@@ -169,16 +169,6 @@ public class TeamControllerUtil
         return RoundingUtil.round(winPct, DECIMAL_PLACES);
     }
 
-    public static Team setTeamGames(Team team, List<Game> homeGames, List<Game> awayGames)
-    {
-        if (!homeGames.isEmpty())
-            team.setHomeGames(homeGames);
-        if (!awayGames.isEmpty())
-            team.setAwayGames(awayGames);
-
-        return team;
-    }
-
     public static List<TeamGame> addToTeamSchedule(Date date, List<TeamGame> games, Team opponent, int opponentScore,
                                                    int teamOneScore, Site site)
     {
