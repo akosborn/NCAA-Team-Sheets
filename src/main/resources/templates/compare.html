@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
-      layout:decorator="layout_site"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.w3.org/1999/xhtml">
-<head>
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{})">
     <title>Quadrantology</title>
     <link rel="stylesheet" th:href="@{/css/compare.css}">
 </head>
-<body>
-
-    <div layout:fragment="content">
+<body th:replace="base :: common_body(~{::main},~{})">
+    <main role="main" class="container">
         <div class="row" id="teams">
             <th:block th:each="team,iterStat : ${teams}" th:object="${team}">
                 <th:block th:if="${iterStat.count == 2}">
@@ -47,6 +44,6 @@
                 </div>
             </th:block>
         </div>
-    </div>
+    </main>
 </body>
 </html>
