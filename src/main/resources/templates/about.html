@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
-      layout:decorator="layout_site"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.w3.org/1999/xhtml">
-<head>
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title},~{::link},~{})">
     <title>About</title>
     <link rel="stylesheet" th:href="@{/css/about.css}">
 </head>
-<body>
-    <div layout:fragment="content">
+<body th:replace="base :: common_body(~{::main},~{})">
+    <main role="main" class="container">
         <h1>About</h1>
         <p>
             Quadrantology was created in order to provide easier viewing and access to the quadrant criteria introduced
@@ -20,6 +18,6 @@
             If you have any suggestions or would like to help with the site in any way, contact me at
             <a href="mailto:admin@cbbquadrantology.com">admin@cbbquadrantology.com</a>.
         </p>
-    </div>
+    </main>
 </body>
 </html>
