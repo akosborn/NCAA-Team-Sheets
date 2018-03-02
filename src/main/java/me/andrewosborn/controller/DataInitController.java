@@ -28,8 +28,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-@RequestMapping("/util")
+@RequestMapping("/admin/util")
 @RestController
+
 public class DataInitController
 {
     private TeamService teamService;
