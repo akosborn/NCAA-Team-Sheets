@@ -6,44 +6,293 @@
     <title>Quadrantology</title>
     <link rel="stylesheet" th:href="@{/css/compare.css}">
 </head>
-<body th:replace="base :: common_body(~{::main},~{})">
+<body th:replace="base :: common_body(~{::main},~{::body/script})">
     <main role="main" class="container">
-        <div class="row" id="teams">
-            <th:block th:each="team,iterStat : ${teams}" th:object="${team}">
-                <th:block th:if="${iterStat.count == 2}">
-                    <div class="col-2 labels">
-                        <h3>&nbsp;</h3>
-                        <p>RECORD</p>
-                        <p>WIN %</p>
-                        <p>RPI</p>
-                        <p>SOS</p>
-                        <p>Q1</p>
-                        <p>Q2</p>
-                        <p>Q3</p>
-                        <p>Q4</p>
-                        <p>HOME</p>
-                        <p>AWAY</p>
-                        <p>BEST W</p>
-                        <p>WORST L</p>
-                    </div>
-                </th:block>
-                <div class="col-5 team-side">
-                    <h3 class="team-title" th:text="${team.name}"></h3>
-                    <p class="overall-record" th:text="${team.wins + '-' + team.losses}"></p>
-                    <P class="win-pct" th:text="*{#numbers.formatDecimal(winPct, 1, 6)}"></P>
-                    <p class="rpi-rank" th:text="${team.rpiRank}"></p>
-                    <p class="sos-rank" th:text="*{strengthOfScheduleRank}"></p>
-                    <p th:text="*{quadOneWins + '-' + quadOneLosses}"></p>
-                    <p th:text="*{quadTwoWins + '-' + quadTwoLosses}"></p>
-                    <p th:text="*{quadThreeWins + '-' + quadThreeLosses}"></p>
-                    <p th:text="*{quadFourWins + '-' + quadFourLosses}"></p>
-                    <p th:text="*{homeWins + '-' + homeLosses}"></p>
-                    <p th:text="*{awayWins + '-' + awayLosses}"></p>
-                    <p th:text="*{bestWin.opponent.name + ' (' + bestWin.opponent.rpiRank + ')'}"></p>
-                    <p th:text="*{worstLoss.opponent.name + ' (' + worstLoss.opponent.rpiRank + ')'}"></p>
+        <div class="col">
+            <div class="row">
+                <div class="col-6 col-md-2 offset-md-4" id="team-one-col">
+                    <h3 class="team-name" th:text="${teams.get(0).name}"></h3>
                 </div>
-            </th:block>
+                <div class="col-6 col-md-2" id="team-two-col">
+                    <h3 class="team-name" th:text="${teams.get(1).name}"></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div id="d3-div" class="col-12 col-md-4 offset-md-4"></div>
+            </div>
         </div>
     </main>
+    <script th:src="@{/webjars/d3js/4.10.2/d3.min.js}" src="https://d3js.org/d3.v5.min.js" type="text/javascript"></script>
+    <script th:inline="javascript">
+
+        var teams = [[${teams}]];
+        var divOneTeamCount = 351;
+        var metrics = ["RPI", "SOS", "Q1 Wins", "Q2 Wins", "Best Win"];
+
+        var margin = {top: 0, right: parseInt(d3.select("#d3-div").style("padding-right")),
+                bottom: 0, left: parseInt(d3.select("#d3-div").style("padding-left"))},
+            width = parseInt(d3.select("#d3-div").style("width")) - margin.left - margin.right,
+            height = parseInt(d3.select("#d3-div").style("height")) - margin.top - margin.bottom;
+
+        console.log(width);
+        console.log(parseInt(d3.select("#d3-div").style("width")) - margin.left - margin.right);
+        console.log(margin);
+
+        var x = d3.scaleLinear()
+            .range([0, width]);
+
+        var y = d3.scaleBand()
+            .range([0, height])
+            .padding(0.45);
+
+        var xAxis = d3.axisBottom(x);
+
+        var yAxis = d3.axisLeft(y)
+            .tickSize(0)
+            .tickPadding(6);
+
+        var svg = d3.select("#d3-div").append("svg")
+            .attr("width", width)
+            .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g");
+
+        x.domain([0, width]);
+        y.domain(metrics);
+
+        function getTeamOneDivOneWidthPct(teamOneMetric, teamTwoMetric) {
+            var pctDiff = 0;
+
+            if (teamOneMetric < teamTwoMetric) {
+                pctDiff = (teamTwoMetric - teamOneMetric) / divOneTeamCount;
+                return 0.5 + pctDiff;
+            } else {
+                pctDiff = (teamOneMetric - teamTwoMetric) / divOneTeamCount;
+                return 1 - (0.5 + pctDiff);
+            }
+        }
+
+        function getTeamOneTotalWidthPct(teamOneMetric, teamTwoMetric) {
+            var total = teamOneMetric + teamTwoMetric;
+            return teamOneMetric / total;
+        }
+
+        var barSeparatorWidth = 0.005 * width;
+        var barWidth = width - barSeparatorWidth;
+
+        var teamOneRpiWidth = getTeamOneDivOneWidthPct(teams[0].rpiRank, teams[1].rpiRank, divOneTeamCount) * barWidth;
+        var teamTwoRpiWidth = barWidth - teamOneRpiWidth;
+
+        // Team one rpi bar
+        var teamOneRpiBar = g
+            .append("rect")
+            .attr("class", "bar bar--rpi")
+            .attr("x", 0)
+            .attr("y", y(metrics[0]))
+            .attr("width", teamOneRpiWidth)
+            .attr("height", y.bandwidth())
+            .attr("fill", "grey");
+
+        // Team two rpi bar
+        var teamTwoRpiBar = g
+            .append("rect")
+            .attr("class", "bar bar--rpi")
+            .attr("x", teamOneRpiWidth + barSeparatorWidth)
+            .attr("y", y(metrics[0]))
+            .attr("width", teamTwoRpiWidth)
+            .attr("height", y.bandwidth())
+            .attr("fill", "#4682B4");
+
+        var teamOneSosWidth = getTeamOneDivOneWidthPct(teams[0].strengthOfScheduleRank, teams[1].strengthOfScheduleRank) * barWidth;
+        var teamTwoSosWidth = barWidth - teamOneSosWidth;
+
+        // Team one sos bar
+        var teamOneSosBar = g
+            .append("rect")
+            .attr("class", "bar bar--sos")
+            .attr("x", 0)
+            .attr("y", y(metrics[1]))
+            .attr("width", teamOneSosWidth)
+            .attr("height", y.bandwidth())
+            .attr("fill", "grey");
+
+        // Team two sos bar
+        var teamTwoSosBar = g
+            .append("rect")
+            .attr("class", "bar bar--sos")
+            .attr("x", teamOneSosWidth + barSeparatorWidth)
+            .attr("y", y(metrics[1]))
+            .attr("width", teamTwoSosWidth)
+            .attr("height", y.bandwidth())
+            .attr("fill", "#4682B4");
+
+        var teamOneQ1Width = getTeamOneTotalWidthPct(teams[0].quadOneWins, teams[1].quadOneWins) * barWidth;
+        var teamTwoQ1Width = barWidth - teamOneQ1Width;
+
+        // Team one Q1 bar
+        var teamOneQ1Bar = g
+            .append("rect")
+            .attr("class", "bar bar--q1")
+            .attr("x", 0)
+            .attr("y", y(metrics[2]))
+            .attr("width", teamOneQ1Width)
+            .attr("height", y.bandwidth())
+            .attr("fill", "grey");
+
+        // Team two Q1 bar
+        var teamTwoQ1Bar = g
+            .append("rect")
+            .attr("class", "bar bar--q1")
+            .attr("x", teamOneQ1Width + barSeparatorWidth)
+            .attr("y", y(metrics[2]))
+            .attr("width", teamTwoQ1Width)
+            .attr("height", y.bandwidth())
+            .attr("fill", "#4682B4");
+
+        var teamOneQ2Width = getTeamOneTotalWidthPct(teams[0].quadTwoWins, teams[1].quadTwoWins) * barWidth;
+        var teamTwoQ2Width = barWidth - teamOneQ2Width;
+
+        // Team one Q2 bar
+        var teamOneQ2Bar = g
+            .append("rect")
+            .attr("class", "bar bar--q2")
+            .attr("x", 0)
+            .attr("y", y(metrics[3]))
+            .attr("width", teamOneQ2Width)
+            .attr("height", y.bandwidth())
+            .attr("fill", "grey");
+
+        // Team two Q2 bar
+        var teamTwoQ2Bar = g
+            .append("rect")
+            .attr("class", "bar bar--q2")
+            .attr("x", teamOneQ2Width + barSeparatorWidth)
+            .attr("y", y(metrics[3]))
+            .attr("width", teamTwoQ2Width)
+            .attr("height", y.bandwidth())
+            .attr("fill", "#4682B4");
+
+        var teamOneBestWinWidth = getTeamOneDivOneWidthPct(teams[0].bestWin.opponent.rpiRank,
+                teams[1].bestWin.opponent.rpiRank, divOneTeamCount) * barWidth;
+        var teamTwoBestWinWidth = barWidth - teamOneBestWinWidth;
+
+        // Team one rpi bar
+        var teamOneBestWinBar = g
+            .append("rect")
+            .attr("class", "bar bar--rpi")
+            .attr("x", 0)
+            .attr("y", y(metrics[4]))
+            .attr("width", teamOneBestWinWidth)
+            .attr("height", y.bandwidth())
+            .attr("fill", "grey");
+
+        // Team two rpi bar
+        var teamTwoBestWinBar = g
+            .append("rect")
+            .attr("class", "bar bar--rpi")
+            .attr("x", teamOneBestWinWidth + barSeparatorWidth)
+            .attr("y", y(metrics[4]))
+            .attr("width", teamTwoBestWinWidth)
+            .attr("height", y.bandwidth())
+            .attr("fill", "#4682B4");
+
+        g.append("path")
+            .attr("d", "M " + x(width/2) + " 0 L " + x(width/2) + " " + height)
+            .attr("stroke-width", 0.5)
+            .attr("stroke", "white");
+
+        // RPI y-axis label
+        g.append("text")
+            .attr("class", "metric-label")
+            .text(metrics[0])
+            .attr("transform", "translate(" + x(width / 2) + ", " + (y(metrics[0]) - 3) + ")")
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bold");
+        g.append("text")
+            .attr("class", "rpi")
+            .text(teams[0].rpiRank)
+            .attr("transform", "translate(" + x(0) + ", " + (y(metrics[0]) - 3) + ")")
+            .attr("text-anchor", "start");
+        g.append("text")
+            .attr("class", "rpi")
+            .text(teams[1].rpiRank)
+            .attr("transform", "translate(" + x(width) + ", " + (y(metrics[0]) - 3) + ")")
+            .attr("text-anchor", "end");
+
+        // SOS y-axis label
+        g.append("text")
+            .attr("class", "metric-label")
+            .text(metrics[1])
+            .attr("transform", "translate(" + x(width / 2) + ", " + (y(metrics[1]) - 3) + ")")
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bold");
+        g.append("text")
+            .attr("class", "sos")
+            .text(teams[0].strengthOfScheduleRank)
+            .attr("transform", "translate(" + x(0) + ", " + (y(metrics[1]) - 3) + ")")
+            .attr("text-anchor", "beginning");
+        g.append("text")
+            .attr("class", "sos")
+            .text(teams[1].strengthOfScheduleRank)
+            .attr("transform", "translate(" + x(width) + ", " + (y(metrics[1]) - 3) + ")")
+            .attr("text-anchor", "end");
+
+        // Q1 y-axis label
+        g.append("text")
+            .attr("class", "metric-label")
+            .text(metrics[2])
+            .attr("transform", "translate(" + x(width / 2) + ", " + (y(metrics[2]) - 3) + ")")
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bold");
+        g.append("text")
+            .attr("class", "q1")
+            .text(teams[0].quadOneWins)
+            .attr("transform", "translate(" + x(0) + ", " + (y(metrics[2]) - 3) + ")")
+            .attr("text-anchor", "beginning");
+        g.append("text")
+            .attr("class", "q1")
+            .text(teams[1].quadOneWins)
+            .attr("transform", "translate(" + x(width) + ", " + (y(metrics[2]) - 3) + ")")
+            .attr("text-anchor", "end");
+
+        // Q2 y-axis label
+        g.append("text")
+            .attr("class", "metric-label")
+            .text(metrics[3])
+            .attr("transform", "translate(" + x(width / 2) + ", " + (y(metrics[3]) - 3) + ")")
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bold");
+        g.append("text")
+            .attr("class", "q2")
+            .text(teams[0].quadTwoWins)
+            .attr("transform", "translate(" + x(0) + ", " + (y(metrics[3]) - 3) + ")")
+            .attr("text-anchor", "beginning");
+        g.append("text")
+            .attr("class", "q2")
+            .text(teams[1].quadTwoWins)
+            .attr("transform", "translate(" + x(width) + ", " + (y(metrics[3]) - 3) + ")")
+            .attr("text-anchor", "end");
+
+        // Best win y-axis label
+        g.append("text")
+            .attr("class", "metric-label")
+            .text(metrics[4])
+            .attr("transform", "translate(" + x(width / 2) + ", " + (y(metrics[4]) - 3) + ")")
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bold");
+        g.append("text")
+            .attr("class", "q2")
+            .text(teams[0].bestWin.opponent.rpiRank + " " + teams[0].bestWin.opponent.name + " [" + teams[0].bestWin.site.charAt(0) + "] ")
+            .attr("transform", "translate(" + x(0) + ", " + (y(metrics[4]) - 3) + ")")
+            .attr("text-anchor", "beginning");
+        g.append("text")
+            .attr("class", "q2")
+            .text("[" + teams[1].bestWin.site.charAt(0) + "] " + teams[1].bestWin.opponent.name + " " + teams[1].bestWin.opponent.rpiRank)
+            .attr("transform", "translate(" + x(width) + ", " + (y(metrics[4]) - 3) + ")")
+            .attr("text-anchor", "end");
+
+    </script>
 </body>
 </html>
