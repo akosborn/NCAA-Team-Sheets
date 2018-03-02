@@ -54,13 +54,11 @@ public class DataInitController
                        @RequestParam(value = "day") int day,
                        RedirectAttributes redirectAttributes)
     {
-        boolean checkNeutralSites = false;
-
         // save games in range of dates from game urls
         LocalDate fromDate = LocalDate.of(year, month, day);
         LocalDate toDate = LocalDate.of(year, month, day);
         List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
-        saveGames(gameUrls);
+        List<Game> games = saveGames(gameUrls);
 
         // add games newly-added day to teams' schedules, calculate records, and save
         Calendar calendar = Calendar.getInstance();
@@ -70,10 +68,19 @@ public class DataInitController
         calendar.set(Calendar.SECOND,0);
         calendar.set(Calendar.MILLISECOND,0);
         Date date = calendar.getTime();
-        for (Game game : gameService.getByDate(date))
+        for (Game game : games)
         {
             Team homeTeam = game.getHomeTeam();
             Team awayTeam = game.getAwayTeam();
+
+            String conference = homeTeam.getConference().getName();
+
+            if (conference.equals("Horizon") || conference.equals("Metro Atlantic Athletic") ||
+                    conference.equals("Missouri Valley") || conference.equals("Ohio Valley") ||
+                    conference.equals("Summit League") || conference.equals("West Coast") ||
+                    conference.equals("Southern") || conference.equals("Northeast") ||
+                    conference.equals("Colonial Athletic"))
+                game.setNeutralSite(true);
 
             List<TeamGame> homeTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
                     game.getAwayScore(), game.getHomeScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.HOME);
@@ -92,7 +99,14 @@ public class DataInitController
         redirectAttributes.addAttribute("month", month);
         redirectAttributes.addAttribute("day", day);
 
-        return "redirect:/admin/util/games";
+        if (games.size() > 0)
+        {
+            return "redirect:/admin/util/neutral";
+        }
+        else
+        {
+            return "redirect:/admin/util/games";
+        }
     }
 
     @RequestMapping("/neutral")
@@ -120,7 +134,7 @@ public class DataInitController
             }
         }
 
-        return "redirect:/";
+        return "redirect:/admin/util/rpi";
     }
 
     @RequestMapping("/rpi")
@@ -157,7 +171,7 @@ public class DataInitController
             teamService.save(team);
         }
 
-        return "redirect:/";
+        return "redirect:/admin/util/sos";
     }
 
     @RequestMapping("/sos")
@@ -179,79 +193,6 @@ public class DataInitController
         }
 
         return  "redirect:/";
-    }
-
-    @RequestMapping("/opponents")
-    public String setGames()
-    {
-        for (Game game : gameService.getAll())
-        {
-            Team homeTeam = game.getHomeTeam();
-            Team awayTeam = game.getAwayTeam();
-
-            List<TeamGame> homeTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
-                    game.getAwayScore(), game.getHomeScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.HOME);
-            homeTeam.setGames(homeTeamGames);
-            teamService.save(homeTeam);
-
-            List<TeamGame> awayTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), awayTeam.getGames(), homeTeam,
-                    game.getHomeScore(), game.getAwayScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.AWAY);
-            awayTeam.setGames(awayTeamGames);
-            teamService.save(awayTeam);
-        }
-
-        return "Set all schedules.";
-    }
-
-    private void saveData(LocalDate fromDate, LocalDate toDate)
-    {
-        saveConferencesWithTeams();
-        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
-        saveGames(gameUrls);
-    }
-
-    private void saveConferencesWithTeams()
-    {
-        try
-        {
-            String urlString = "https://www.ncaa.com/standings/basketball-men/d1/2017";
-            Document document = Jsoup.connect(urlString).get();
-
-            List<Element> conferenceElements =
-                    document.getElementsByClass("ncaa-standings-conference-name");
-            for (Element confElement : conferenceElements)
-            {
-                String confName = confElement.text();
-                String confURLName = ControllerUtil.toSlug(confName);
-
-                Conference conference = new Conference(confName, confURLName);
-                List<Team> confTeams = new ArrayList<>();
-
-                Element conferenceTable = confElement.nextElementSibling();
-                Elements confTableRows = conferenceTable.select("tbody>tr");
-                for (int i = 0; i < confTableRows.size(); i++)
-                {
-                    if (i > 0)
-                    {
-                        Element teamRow = confTableRows.get(i);
-                        Element teamNameCell = teamRow.children().first().children().first();
-                        Element link = teamNameCell.select("a").first();
-                        String teamURL = link.attr("href");
-                        String teamURLName = teamURL.split("/")[2];
-                        String teamName = link.select("span").text();
-
-                        Team team = new Team(teamName, teamURLName, conference);
-                        confTeams.add(team);
-                    }
-                }
-
-                conference.setTeams(confTeams);
-                conferenceService.save(conference);
-            }
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     private List<LocalDate> getDatesInRange(LocalDate fromDate, LocalDate toDate)
@@ -300,10 +241,11 @@ public class DataInitController
         return gameURLs;
     }
 
-    private void saveGames(List<String> gameUrls)
+    private List<Game> saveGames(List<String> gameUrls)
     {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         String baseUrl = "http://data.ncaa.com";
+        List<Game> games = new ArrayList<>();
         for (String gameUrl : gameUrls)
         {
             String url = baseUrl + gameUrl;
@@ -318,6 +260,9 @@ public class DataInitController
                     continue;
                 }
 
+                if (!gamePOJO.getCurrentPeriod().equals("Final"))
+                    continue;
+
                 Game game = new Game();
                 game.setDate(gamePOJO.getDate());
                 game.setHomeTeam(homeTeam);
@@ -328,13 +273,15 @@ public class DataInitController
                 // Move to next gameUrl if game is already in database
                 if (gameService.getByHomeTeamAndAwayTeamAndDate(homeTeam, awayTeam, gamePOJO.getDate()) != null)
                     continue;
-                gameService.save(game);
+                games.add(gameService.save(game));
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
+
+        return games;
     }
 
     private class GamePOJO
@@ -350,6 +297,9 @@ public class DataInitController
 
         @SerializedName("startDate")
         private Date date;
+
+        @SerializedName("currentPeriod")
+        private String currentPeriod;
 
         public TeamPOJO getHomeTeam()
         {
@@ -379,6 +329,16 @@ public class DataInitController
         public void setDate(Date date)
         {
             this.date = date;
+        }
+
+        public String getCurrentPeriod()
+        {
+            return currentPeriod;
+        }
+
+        public void setCurrentPeriod(String currentPeriod)
+        {
+            this.currentPeriod = currentPeriod;
         }
     }
 
