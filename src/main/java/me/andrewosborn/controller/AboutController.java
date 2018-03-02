@@ -9,6 +9,6 @@ public class AboutController
     @RequestMapping("/about")
     public String getAbout()
     {
-        return "about";
+        return "/public/about";
     }
 }

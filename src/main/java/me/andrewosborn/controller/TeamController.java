@@ -36,7 +36,7 @@ public class TeamController
         List<Conference> conferences = conferenceService.getAll();
         model.addAttribute("conferences", conferences);
 
-        return "conferences";
+        return "/public/conferences";
     }
 
     @RequestMapping(value = "/team/{teamName}")
@@ -49,6 +49,6 @@ public class TeamController
         List<Team> teams = teamService.getAllOrderByName();
         model.addAttribute("teams", teams);
 
-        return "team";
+        return "/public/team";
     }
 }
