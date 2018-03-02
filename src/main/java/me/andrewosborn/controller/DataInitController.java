@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import me.andrewosborn.model.*;
 import me.andrewosborn.persistence.ConferenceService;
 import me.andrewosborn.persistence.GameService;
+import me.andrewosborn.persistence.TeamGameService;
 import me.andrewosborn.persistence.TeamService;
 import me.andrewosborn.util.*;
 import org.json.JSONArray;
@@ -15,11 +16,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.persistence.NonUniqueResultException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -29,26 +30,29 @@ import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/admin/util")
-@RestController
-
+@Controller
 public class DataInitController
 {
     private TeamService teamService;
     private ConferenceService conferenceService;
     private GameService gameService;
+    private TeamGameService teamGameService;
 
     @Autowired
-    public DataInitController(TeamService teamService, ConferenceService conferenceService, GameService gameService)
+    public DataInitController(TeamService teamService, ConferenceService conferenceService, GameService gameService,
+                              TeamGameService teamGameService)
     {
         this.teamService = teamService;
         this.conferenceService = conferenceService;
         this.gameService = gameService;
+        this.teamGameService = teamGameService;
     }
 
     @RequestMapping("/add-games")
     public String home(@RequestParam(value = "year") int year,
                        @RequestParam(value = "month") int month,
-                       @RequestParam(value = "day") int day)
+                       @RequestParam(value = "day") int day,
+                       RedirectAttributes redirectAttributes)
     {
         boolean checkNeutralSites = false;
 
@@ -84,34 +88,39 @@ public class DataInitController
             teamService.save(awayTeam);
         }
 
-        if (checkNeutralSites)
+        redirectAttributes.addAttribute("year", year);
+        redirectAttributes.addAttribute("month", month);
+        redirectAttributes.addAttribute("day", day);
+
+        return "redirect:/admin/util/games";
+    }
+
+    @RequestMapping("/neutral")
+    public String setNeutral(@RequestParam(value = "year") int year,
+                             @RequestParam(value = "month") int month,
+                             @RequestParam(value = "day") int day)
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        Date date = calendar.getTime();
+
+        List<String> oppUrls = SportsReferenceUtil.getNeutralSiteGamesByMonth(date);
+
+        for (String opponent : oppUrls)
         {
-            for (Team team : teamService.getAll())
+            TeamGame game = teamGameService.getByDateAndUrlName(date, opponent);
+            if (game != null)
             {
-                // Check for new neutral site games and update and save as necessary
-                List<Date> neutralDates = SportsReferenceUtil.getNeutralSiteGames(team, month);
-                for (Date neutralDate : neutralDates)
-                {
-                    try
-                    {
-                        List<Game> games = gameService.getByTeamAndDate(team, neutralDate);
-                        for (Game game : games)
-                        {
-                            if (game.isNeutralSite())
-                                continue;
-                            game.setNeutralSite(true);
-                            gameService.save(game);
-                        }
-                    }
-                    catch (NonUniqueResultException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
+                game.setSite(Site.NEUTRAL);
+                teamGameService.save(game);
             }
         }
 
-        return "Updated RPI to account for " + date + " games.";
+        return "redirect:/";
     }
 
     @RequestMapping("/rpi")
@@ -148,7 +157,7 @@ public class DataInitController
             teamService.save(team);
         }
 
-        return "Calculated RPI.";
+        return "redirect:/";
     }
 
     @RequestMapping("/sos")
@@ -169,7 +178,7 @@ public class DataInitController
             teamService.save(team);
         }
 
-        return "Strength of schedule calculated";
+        return  "redirect:/";
     }
 
     @RequestMapping("/opponents")

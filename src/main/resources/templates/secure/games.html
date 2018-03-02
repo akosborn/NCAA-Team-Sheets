@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="public/base :: common_header(~{::title},~{::link},~{})">
+    <title>Games</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+</head>
+<body th:replace="public/base :: common_body(~{::main},~{::body/script})">
+    <main role="main" class="container">
+        <div class="table-responsive">
+            <table id="game-table" class="table table-striped rpi-table">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Opponent</th>
+                    <th scope="col">Conference</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="game : ${games}" th:object="${game}">
+                    <tr>
+                        <td th:text="*{id}"></td>
+                        <td th:text="*{opponent.name}"></td>
+                        <td th:text="*{opponent.conference.name}"></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#game-table').DataTable();
+        } );
+    </script>
+</body>
+</html>
