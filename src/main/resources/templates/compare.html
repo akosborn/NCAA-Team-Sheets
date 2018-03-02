@@ -36,10 +36,6 @@
             width = parseInt(d3.select("#d3-div").style("width")) - margin.left - margin.right,
             height = parseInt(d3.select("#d3-div").style("height")) - margin.top - margin.bottom;
 
-        console.log(width);
-        console.log(parseInt(d3.select("#d3-div").style("width")) - margin.left - margin.right);
-        console.log(margin);
-
         var x = d3.scaleLinear()
             .range([0, width]);
 
