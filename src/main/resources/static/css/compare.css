@@ -5,3 +5,19 @@
 .labels {
     text-align: center;
 }
+
+#d3-div {
+    min-height: 400px;
+}
+
+.team-name {
+    text-align: center;
+}
+
+#team-one-col {
+    padding-right: 0;
+}
+
+#team-two-col {
+    padding-left: 0;
+}
