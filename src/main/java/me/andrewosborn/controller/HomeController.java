@@ -24,6 +24,6 @@ public class HomeController
         model.addAttribute("topTenQuadOneTeams", teamService.getTopTenOrderByQuadOneWinsDesc());
         model.addAttribute("topTenQuadOnePlusTwoTeams", teamService.getTopTenOrderByQuadOneWinsPlusQuadTwoWinsDesc());
 
-        return "home";
+        return "/public/home";
     }
 }

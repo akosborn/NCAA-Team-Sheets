@@ -77,6 +77,6 @@ public class CompareController
 
         model.addAttribute("teams", teams);
 
-        return "compare";
+        return "/public/compare";
     }
 }

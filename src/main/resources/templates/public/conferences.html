@@ -2,11 +2,11 @@
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:replace="base :: common_header(~{::title},~{::link},~{})">
+<head th:replace="public/base :: common_header(~{::title},~{::link},~{})">
     <title>Teams</title>
     <link rel="stylesheet" th:href="@{/css/conferences.css}">
 </head>
-<body th:replace="base :: common_body(~{::main},~{})">
+<body th:replace="public/base :: common_body(~{::main},~{})">
     <main role="main" class="container">
         <div class="row">
             <th:block th:each="conference : ${conferences}" th:object="${conference}">

@@ -2,17 +2,18 @@
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:replace="base :: common_header(~{::title},~{::link},~{})">
+<head th:replace="public/base :: common_header(~{::title},~{::link},~{})">
     <title>About</title>
     <link rel="stylesheet" th:href="@{/css/about.css}">
 </head>
-<body th:replace="base :: common_body(~{::main},~{})">
+<body th:replace="public/base :: common_body(~{::main},~{})">
     <main role="main" class="container">
         <h1>About</h1>
         <p>
             Quadrantology was created in order to provide easier viewing and access to the quadrant criteria introduced
-            by this season as a new way to evaluate teams for the NCAA Tournament. The official team sheets can be found
-            <a href="https://extra.ncaa.org/solutions/rpi/SitePages/Home.aspx">here</a> in a PDF. As of now, the RPI calculated here reflects the most-recently-completed day's games.
+            by this season as a new way to evaluate teams for the NCAA Tournament. The official (original) team sheets can be
+            found <a href="https://extra.ncaa.org/solutions/rpi/SitePages/Home.aspx">here</a> in a PDF. RPI is calculated
+            hourly to reflect the day's completed games.
         </p>
         <p>
             If you have any suggestions or would like to help with the site in any way, contact me at

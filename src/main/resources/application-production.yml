@@ -11,3 +11,8 @@ spring:
     show-sql: false
   thymeleaf:
     cache: true
+security:
+  user:
+    name: akosborn
+    password: Osbo_789101112
+    role: ADMIN
