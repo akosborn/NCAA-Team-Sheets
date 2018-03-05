@@ -1,21 +1,24 @@
-package me.andrewosborn.controller;
+package me.andrewosborn.scheduling;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-import me.andrewosborn.model.*;
-import me.andrewosborn.persistence.ConferenceService;
+import me.andrewosborn.model.Game;
+import me.andrewosborn.model.Site;
+import me.andrewosborn.model.Team;
+import me.andrewosborn.model.TeamGame;
 import me.andrewosborn.persistence.GameService;
 import me.andrewosborn.persistence.TeamGameService;
 import me.andrewosborn.persistence.TeamService;
-import me.andrewosborn.util.*;
+import me.andrewosborn.util.JsonUtil;
+import me.andrewosborn.util.RpiUtil;
+import me.andrewosborn.util.SportsReferenceUtil;
+import me.andrewosborn.util.TeamControllerUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -25,57 +28,47 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-@RequestMapping("/admin/util")
-@Controller
-public class DataInitController
+@Component
+public class DatabaseUpdate
 {
     private TeamService teamService;
-    private ConferenceService conferenceService;
     private GameService gameService;
     private TeamGameService teamGameService;
 
     @Autowired
-    public DataInitController(TeamService teamService, ConferenceService conferenceService, GameService gameService,
-                              TeamGameService teamGameService)
+    public DatabaseUpdate(TeamService teamService, GameService gameService, TeamGameService teamGameService)
     {
         this.teamService = teamService;
-        this.conferenceService = conferenceService;
         this.gameService = gameService;
         this.teamGameService = teamGameService;
     }
 
-    @RequestMapping("/add-games")
-    public String home(@RequestParam(value = "year") int year,
-                       @RequestParam(value = "month") int month,
-                       @RequestParam(value = "day") int day,
-                       RedirectAttributes redirectAttributes)
+    // Run every hour
+    @Scheduled(cron = "0 0 * ? * *")
+    public void start()
     {
-        // save games in range of dates from game urls
-        LocalDate fromDate = LocalDate.of(year, month, day);
-        LocalDate toDate = LocalDate.of(year, month, day);
-        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(fromDate, toDate));
-        List<Game> games = saveGames(gameUrls);
+        System.out.println("Database update started at " + Calendar.getInstance());
 
-        // add games newly-added day to teams' schedules, calculate records, and save
+        // get current date
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.HOUR, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND,0);
         calendar.set(Calendar.MILLISECOND,0);
+
+        // save games in range of dates from game urls
+        LocalDate localDate = LocalDate.now();
+        List<String> gameUrls = getGameUrlsByDates(getDatesInRange(localDate, localDate));
+        List<Game> games = saveGames(gameUrls);
+
+        // add games newly-added day to teams' schedules, calculate records, and save
         for (Game game : games)
         {
             Team homeTeam = game.getHomeTeam();
             Team awayTeam = game.getAwayTeam();
 
-            String conference = homeTeam.getConference().getName();
-
-            if (conference.equals("Horizon") || conference.equals("Metro Atlantic Athletic") ||
-                    conference.equals("Missouri Valley") || conference.equals("Ohio Valley") ||
-                    conference.equals("Summit League") || conference.equals("West Coast") ||
-                    conference.equals("Southern") || conference.equals("Northeast") ||
-                    conference.equals("Colonial Athletic"))
-                game.setNeutralSite(true);
+            // Assume all games at this point are neutral
+            game.setNeutralSite(true);
 
             List<TeamGame> homeTeamGames = TeamControllerUtil.addToTeamSchedule(game.getDate(), homeTeam.getGames(), awayTeam,
                     game.getAwayScore(), game.getHomeScore(), game.isNeutralSite() ? Site.NEUTRAL : Site.HOME);
@@ -90,27 +83,18 @@ public class DataInitController
             teamService.save(awayTeam);
         }
 
-        redirectAttributes.addAttribute("year", year);
-        redirectAttributes.addAttribute("month", month);
-        redirectAttributes.addAttribute("day", day);
-
         if (games.size() > 0)
         {
-            return "redirect:/admin/util/neutral";
-        }
-        else
-        {
-            return "redirect:/admin/util/games";
+            setNeutral(localDate);
+            calculateRpi();
+            calculateStrengthOfSchedule();
         }
     }
 
-    @RequestMapping("/neutral")
-    public String setNeutral(@RequestParam(value = "year") int year,
-                             @RequestParam(value = "month") int month,
-                             @RequestParam(value = "day") int day)
+    private void setNeutral(LocalDate localDate)
     {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day);
+        calendar.set(localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND,0);
@@ -128,12 +112,9 @@ public class DataInitController
                 teamGameService.save(game);
             }
         }
-
-        return "redirect:/admin/util/rpi";
     }
 
-    @RequestMapping("/rpi")
-    public String calculateRpi()
+    public void calculateRpi()
     {
         for (Team team : teamService.getAll())
         {
@@ -165,12 +146,9 @@ public class DataInitController
             team = TeamControllerUtil.setQuadrantRecords(team);
             teamService.save(team);
         }
-
-        return "redirect:/admin/util/sos";
     }
 
-    @RequestMapping("/sos")
-    public String setStrengthOfSchedule()
+    private void calculateStrengthOfSchedule()
     {
         for (Team team : teamService.getAll())
         {
@@ -186,8 +164,6 @@ public class DataInitController
             team.setStrengthOfScheduleRank(i + 1);
             teamService.save(team);
         }
-
-        return  "redirect:/";
     }
 
     private List<LocalDate> getDatesInRange(LocalDate fromDate, LocalDate toDate)
@@ -255,7 +231,7 @@ public class DataInitController
                     continue;
                 }
 
-                if (!gamePOJO.getFinalMessage().contains("Final"))
+                if (!gamePOJO.getCurrentPeriod().equals("Final"))
                     continue;
 
                 Game game = new Game();
@@ -293,8 +269,8 @@ public class DataInitController
         @SerializedName("startDate")
         private Date date;
 
-        @SerializedName("finalMessage")
-        private String finalMessage;
+        @SerializedName("currentPeriod")
+        private String currentPeriod;
 
         public TeamPOJO getHomeTeam()
         {
@@ -326,14 +302,14 @@ public class DataInitController
             this.date = date;
         }
 
-        public String getFinalMessage()
+        public String getCurrentPeriod()
         {
-            return finalMessage;
+            return currentPeriod;
         }
 
-        public void setFinalMessage(String finalMessage)
+        public void setCurrentPeriod(String currentPeriod)
         {
-            this.finalMessage = finalMessage;
+            this.currentPeriod = currentPeriod;
         }
     }
 
