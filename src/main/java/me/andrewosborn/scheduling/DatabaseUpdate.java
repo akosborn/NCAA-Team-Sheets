@@ -44,7 +44,7 @@ public class DatabaseUpdate
     }
 
     // Run every hour
-    @Scheduled(cron = "0 */2 * ? * *")
+    @Scheduled(cron = "0 0 * ? * *")
     public void start()
     {
         System.out.println("Database update started at " + Calendar.getInstance().getTime());
