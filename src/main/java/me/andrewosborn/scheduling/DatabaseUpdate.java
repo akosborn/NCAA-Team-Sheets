@@ -51,7 +51,6 @@ public class DatabaseUpdate
 
         // save games in range of dates from game urls
         LocalDate localDate = LocalDate.now();
-        localDate = localDate.minusDays(1);
         List<String> gameUrls = getGameUrlsByDates(getDatesInRange(localDate, localDate));
         List<Game> games = saveGames(gameUrls);
 
