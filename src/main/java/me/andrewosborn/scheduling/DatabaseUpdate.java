@@ -47,17 +47,11 @@ public class DatabaseUpdate
     @Scheduled(cron = "0 0 * ? * *")
     public void start()
     {
-        System.out.println("Database update started at " + Calendar.getInstance());
-
-        // get current date
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND,0);
-        calendar.set(Calendar.MILLISECOND,0);
+        System.out.println("Database update started at " + Calendar.getInstance().getTime());
 
         // save games in range of dates from game urls
         LocalDate localDate = LocalDate.now();
+        localDate = localDate.minusDays(1);
         List<String> gameUrls = getGameUrlsByDates(getDatesInRange(localDate, localDate));
         List<Game> games = saveGames(gameUrls);
 
@@ -231,7 +225,7 @@ public class DatabaseUpdate
                     continue;
                 }
 
-                if (!gamePOJO.getCurrentPeriod().equals("Final"))
+                if (!gamePOJO.getCurrentPeriod().contains("Final") && !gamePOJO.getFinalMessage().contains("Final"))
                     continue;
 
                 Game game = new Game();
@@ -272,6 +266,9 @@ public class DatabaseUpdate
         @SerializedName("currentPeriod")
         private String currentPeriod;
 
+        @SerializedName("finalMessage")
+        private String finalMessage;
+
         public TeamPOJO getHomeTeam()
         {
             return homeTeam;
@@ -310,6 +307,16 @@ public class DatabaseUpdate
         public void setCurrentPeriod(String currentPeriod)
         {
             this.currentPeriod = currentPeriod;
+        }
+
+        public String getFinalMessage()
+        {
+            return finalMessage;
+        }
+
+        public void setFinalMessage(String finalMessage)
+        {
+            this.finalMessage = finalMessage;
         }
     }
 

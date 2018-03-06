@@ -15,12 +15,10 @@ public class Game implements Comparable
     @GeneratedValue
     private long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value = {"homeGames", "awayGames", "games"}, allowSetters = true)
+    @ManyToOne
     private Team homeTeam;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value = {"awayGames", "homeGames", "games"}, allowSetters = true)
+    @ManyToOne
     private Team awayTeam;
 
     private int homeScore;
