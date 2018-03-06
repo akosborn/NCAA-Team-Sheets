@@ -12,11 +12,7 @@ import me.andrewosborn.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< HEAD
-import org.springframework.context.annotation.Profile;
-=======
 import org.springframework.stereotype.Controller;
->>>>>>> dev
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -29,14 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-<<<<<<< HEAD
-@Profile("dev")
-@RequestMapping("/util")
-@RestController
-=======
 @RequestMapping("/admin/util")
 @Controller
->>>>>>> dev
 public class DataInitController
 {
     private TeamService teamService;
