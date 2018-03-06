@@ -44,14 +44,13 @@ public class DatabaseUpdate
     }
 
     // Run every hour
-    @Scheduled(cron = "0 0 * ? * *")
+    @Scheduled(cron = "0 */2 * ? * *")
     public void start()
     {
         System.out.println("Database update started at " + Calendar.getInstance().getTime());
 
         // save games in range of dates from game urls
         LocalDate localDate = LocalDate.now();
-        localDate = localDate.minusDays(1);
         List<String> gameUrls = getGameUrlsByDates(getDatesInRange(localDate, localDate));
         List<Game> games = saveGames(gameUrls);
 
